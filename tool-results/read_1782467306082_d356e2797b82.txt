@@ -1,0 +1,1057 @@
+     1→import type { Category, House } from "./types";
+     2→
+     3→const img = (id: string, w = 1600) =>
+     4→  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=80`;
+     5→
+     6→export const CATEGORIES: Category[] = [
+     7→  {
+     8→    slug: "modern",
+     9→    name: "Modern Homes",
+    10→    tagline: "Clean lines, honest materials",
+    11→    description:
+    12→      "Architect-led modern homes with restrained palettes, large glazing and a strong indoor-outdoor dialogue.",
+    13→    icon: "Square",
+    14→    cover: img("1600596542815-ffad4c1539a9", 1200),
+    15→  },
+    16→  {
+    17→    slug: "luxury",
+    18→    name: "Luxury Villas",
+    19→    tagline: "Statement residences",
+    20→    description:
+    21→      "Sprawling villas designed for entertaining — with double-height volumes, pools and resort-grade amenities.",
+    22→    icon: "Gem",
+    23→    cover: img("1613490493576-7fde63acd811", 1200),
+    24→  },
+    25→  {
+    26→    slug: "bungalows",
+    27→    name: "Bungalows",
+    28→    tagline: "Single-storey serenity",
+    29→    description:
+    30→      "Ground-hugging bungalows that prioritise accessibility, privacy and a calm relationship to the garden.",
+    31→    icon: "Home",
+    32→    cover: img("1512917774080-9991f1c4c750", 1200),
+    33→  },
+    34→  {
+    35→    slug: "maisonettes",
+    36→    name: "Maisonettes",
+    37→    tagline: "Stacked elegance",
+    38→    description:
+    39→      "Two-storey residences that separate sleeping and living, ideal for narrow plots and urban infill.",
+    40→    icon: "Building2",
+    41→    cover: img("1600585154340-be6161a56a0c", 1200),
+    42→  },
+    43→  {
+    44→    slug: "villas",
+    45→    name: "Villas",
+    46→    tagline: "Mediterranean composure",
+    47→    description:
+    48→      "Timeless villas with courtyards, terraces and shaded loggias — designed for warm climates and long views.",
+    49→    icon: "Palmtree",
+    50→    cover: img("1600607687939-ce8a6c25118c", 1200),
+    51→  },
+    52→  {
+    53→    slug: "small-homes",
+    54→    name: "Small Homes",
+    55→    tagline: "Considered, compact",
+    56→    description:
+    57→      "Footprint-conscious homes where every square metre is earned through intelligent, flexible planning.",
+    58→    icon: "Layers",
+    59→    cover: img("1600566753086-00f18fb6b3ea", 1200),
+    60→  },
+    61→];
+    62→
+    63→/* ------------------------------------------------------------------ */
+    64→/* Floor plan SVGs — abstract architectural diagrams                  */
+    65→/* ------------------------------------------------------------------ */
+    66→
+    67→const floorPlanGround = (label: string) => `
+    68→<svg viewBox="0 0 800 540" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+    69→  <rect width="800" height="540" fill="#FAF8F5"/>
+    70→  <rect x="20" y="20" width="760" height="500" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+    71→  <!-- Porch -->
+    72→  <rect x="20" y="20" width="180" height="90" fill="none" stroke="#8B8680" stroke-width="1.5" stroke-dasharray="6 4"/>
+    73→  <text x="110" y="70" font-family="Inter, sans-serif" font-size="11" fill="#8B8680" text-anchor="middle" letter-spacing="2">PORCH</text>
+    74→  <!-- Living -->
+    75→  <rect x="200" y="20" width="320" height="240" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+    76→  <text x="360" y="135" font-family="Playfair Display, serif" font-size="18" fill="#1A1A1A" text-anchor="middle">Living Room</text>
+    77→  <text x="360" y="158" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">48 SQM</text>
+    78→  <!-- Kitchen -->
+    79→  <rect x="520" y="20" width="260" height="180" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+    80→  <text x="650" y="105" font-family="Playfair Display, serif" font-size="16" fill="#1A1A1A" text-anchor="middle">Kitchen</text>
+    81→  <text x="650" y="125" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">22 SQM</text>
+    82→  <!-- Dining -->
+    83→  <rect x="520" y="200" width="260" height="120" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+    84→  <text x="650" y="255" font-family="Playfair Display, serif" font-size="14" fill="#1A1A1A" text-anchor="middle">Dining</text>
+    85→  <text x="650" y="273" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">16 SQM</text>
+    86→  <!-- Foyer -->
+    87→  <rect x="200" y="260" width="160" height="100" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+    88→  <text x="280" y="312" font-family="Inter, sans-serif" font-size="11" fill="#1A1A1A" text-anchor="middle" letter-spacing="2">FOYER</text>
+    89→  <!-- Bath -->
+    90→  <rect x="360" y="260" width="160" height="100" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+    91→  <text x="440" y="312" font-family="Inter, sans-serif" font-size="11" fill="#1A1A1A" text-anchor="middle" letter-spacing="2">BATH</text>
+    92→  <!-- Bedroom 2 -->
+    93→  <rect x="20" y="260" width="180" height="260" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+    94→  <text x="110" y="385" font-family="Playfair Display, serif" font-size="14" fill="#1A1A1A" text-anchor="middle">Bedroom 02</text>
+    95→  <text x="110" y="403" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">18 SQM</text>
+    96→  <!-- Master -->
+    97→  <rect x="200" y="360" width="320" height="160" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+    98→  <text x="360" y="435" font-family="Playfair Display, serif" font-size="18" fill="#1A1A1A" text-anchor="middle">Master Suite</text>
+    99→  <text x="360" y="458" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">32 SQM · WALK-IN · ENSUITE</text>
+   100→  <!-- Garage -->
+   101→  <rect x="520" y="320" width="260" height="200" fill="none" stroke="#8B8680" stroke-width="2"/>
+   102→  <text x="650" y="415" font-family="Playfair Display, serif" font-size="14" fill="#1A1A1A" text-anchor="middle">Garage</text>
+   103→  <text x="650" y="435" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">2 CARS</text>
+   104→  <!-- Doors -->
+   105→  <line x1="200" y1="110" x2="200" y2="130" stroke="#FAF8F5" stroke-width="6"/>
+   106→  <line x1="360" y1="360" x2="380" y2="360" stroke="#FAF8F5" stroke-width="6"/>
+   107→  <line x1="520" y1="200" x2="520" y2="220" stroke="#FAF8F5" stroke-width="6"/>
+   108→  <!-- North arrow -->
+   109→  <g transform="translate(740, 470)">
+   110→    <circle cx="0" cy="0" r="18" fill="none" stroke="#8B8680" stroke-width="1"/>
+   111→    <polygon points="0,-12 5,4 0,0 -5,4" fill="#1A1A1A"/>
+   112→    <text x="0" y="-22" font-family="Inter, sans-serif" font-size="9" fill="#8B8680" text-anchor="middle">N</text>
+   113→  </g>
+   114→  <text x="40" y="510" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" letter-spacing="3">${label.toUpperCase()}</text>
+   115→</svg>`;
+   116→
+   117→const floorPlanUpper = (label: string) => `
+   118→<svg viewBox="0 0 800 540" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+   119→  <rect width="800" height="540" fill="#FAF8F5"/>
+   120→  <rect x="20" y="20" width="760" height="500" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+   121→  <!-- Lounge -->
+   122→  <rect x="20" y="20" width="380" height="220" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   123→  <text x="210" y="125" font-family="Playfair Display, serif" font-size="18" fill="#1A1A1A" text-anchor="middle">Family Lounge</text>
+   124→  <text x="210" y="148" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">36 SQM</text>
+   125→  <!-- Bedroom 3 -->
+   126→  <rect x="400" y="20" width="380" height="220" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   127→  <text x="590" y="115" font-family="Playfair Display, serif" font-size="16" fill="#1A1A1A" text-anchor="middle">Bedroom 03</text>
+   128→  <text x="590" y="135" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">22 SQM · ENSUITE</text>
+   129→  <!-- Study -->
+   130→  <rect x="20" y="240" width="240" height="280" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   131→  <text x="140" y="375" font-family="Playfair Display, serif" font-size="16" fill="#1A1A1A" text-anchor="middle">Study</text>
+   132→  <text x="140" y="395" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">14 SQM</text>
+   133→  <!-- Laundry -->
+   134→  <rect x="260" y="240" width="160" height="140" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   135→  <text x="340" y="312" font-family="Inter, sans-serif" font-size="11" fill="#1A1A1A" text-anchor="middle" letter-spacing="2">LAUNDRY</text>
+   136→  <!-- Bath -->
+   137→  <rect x="420" y="240" width="160" height="140" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   138→  <text x="500" y="312" font-family="Inter, sans-serif" font-size="11" fill="#1A1A1A" text-anchor="middle" letter-spacing="2">BATH 02</text>
+   139→  <!-- Bedroom 4 -->
+   140→  <rect x="260" y="380" width="320" height="140" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   141→  <text x="420" y="448" font-family="Playfair Display, serif" font-size="16" fill="#1A1A1A" text-anchor="middle">Bedroom 04</text>
+   142→  <text x="420" y="468" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">20 SQM</text>
+   143→  <!-- Terrace -->
+   144→  <rect x="580" y="240" width="200" height="280" fill="none" stroke="#8B8680" stroke-width="2" stroke-dasharray="6 4"/>
+   145→  <text x="680" y="375" font-family="Inter, sans-serif" font-size="11" fill="#8B8680" text-anchor="middle" letter-spacing="2">TERRACE</text>
+   146→  <text x="680" y="395" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">28 SQM</text>
+   147→  <!-- Doors -->
+   148→  <line x1="400" y1="120" x2="400" y2="140" stroke="#FAF8F5" stroke-width="6"/>
+   149→  <line x1="260" y1="340" x2="280" y2="340" stroke="#FAF8F5" stroke-width="6"/>
+   150→  <g transform="translate(740, 470)">
+   151→    <circle cx="0" cy="0" r="18" fill="none" stroke="#8B8680" stroke-width="1"/>
+   152→    <polygon points="0,-12 5,4 0,0 -5,4" fill="#1A1A1A"/>
+   153→    <text x="0" y="-22" font-family="Inter, sans-serif" font-size="9" fill="#8B8680" text-anchor="middle">N</text>
+   154→  </g>
+   155→  <text x="40" y="510" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" letter-spacing="3">${label.toUpperCase()}</text>
+   156→</svg>`;
+   157→
+   158→const floorPlanSingle = (label: string) => `
+   159→<svg viewBox="0 0 800 540" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+   160→  <rect width="800" height="540" fill="#FAF8F5"/>
+   161→  <rect x="20" y="20" width="760" height="500" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+   162→  <rect x="20" y="20" width="760" height="500" fill="none" stroke="#8B8680" stroke-width="1.5" stroke-dasharray="6 4"/>
+   163→  <rect x="20" y="20" width="240" height="280" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   164→  <text x="140" y="155" font-family="Playfair Display, serif" font-size="18" fill="#1A1A1A" text-anchor="middle">Living</text>
+   165→  <text x="140" y="178" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">42 SQM</text>
+   166→  <rect x="260" y="20" width="280" height="180" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   167→  <text x="400" y="105" font-family="Playfair Display, serif" font-size="16" fill="#1A1A1A" text-anchor="middle">Kitchen + Dining</text>
+   168→  <text x="400" y="125" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">30 SQM</text>
+   169→  <rect x="540" y="20" width="240" height="180" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   170→  <text x="660" y="105" font-family="Playfair Display, serif" font-size="16" fill="#1A1A1A" text-anchor="middle">Master Suite</text>
+   171→  <text x="660" y="125" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">26 SQM</text>
+   172→  <rect x="260" y="200" width="280" height="160" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   173→  <text x="400" y="278" font-family="Playfair Display, serif" font-size="14" fill="#1A1A1A" text-anchor="middle">Bedroom 02</text>
+   174→  <text x="400" y="296" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">18 SQM</text>
+   175→  <rect x="540" y="200" width="240" height="160" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+   176→  <text x="660" y="278" font-family="Inter, sans-serif" font-size="11" fill="#1A1A1A" text-anchor="middle" letter-spacing="2">BATH · WALK-IN</text>
+   177→  <rect x="20" y="300" width="240" height="220" fill="none" stroke="#8B8680" stroke-width="2"/>
+   178→  <text x="140" y="408" font-family="Inter, sans-serif" font-size="11" fill="#8B8680" text-anchor="middle" letter-spacing="2">TERRACE</text>
+   179→  <text x="140" y="426" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" text-anchor="middle" letter-spacing="2">22 SQM</text>
+   180→  <rect x="260" y="360" width="520" height="160" fill="none" stroke="#8B8680" stroke-width="2"/>
+   181→  <text x="520" y="438" font-family="Inter, sans-serif" font-size="11" fill="#8B8680" text-anchor="middle" letter-spacing="2">GARDEN · DECK</text>
+   182→  <g transform="translate(740, 470)">
+   183→    <circle cx="0" cy="0" r="18" fill="none" stroke="#8B8680" stroke-width="1"/>
+   184→    <polygon points="0,-12 5,4 0,0 -5,4" fill="#1A1A1A"/>
+   185→    <text x="0" y="-22" font-family="Inter, sans-serif" font-size="9" fill="#8B8680" text-anchor="middle">N</text>
+   186→  </g>
+   187→  <text x="40" y="510" font-family="Inter, sans-serif" font-size="10" fill="#8B8680" letter-spacing="3">${label.toUpperCase()}</text>
+   188→</svg>`;
+   189→
+   190→/* ------------------------------------------------------------------ */
+   191→/* House catalog                                                      */
+   192→/* ------------------------------------------------------------------ */
+   193→
+   194→export const HOUSES: House[] = [
+   195→  {
+   196→    id: "1",
+   197→    slug: "aurora-residence",
+   198→    name: "The Aurora Residence",
+   199→    tagline: "Modern Luxury Villa",
+   200→    category: "luxury",
+   201→    style: "Modern Luxury",
+   202→    bedrooms: 4,
+   203→    bathrooms: 4,
+   204→    stories: 2,
+   205→    garage: 2,
+   206→    area: 320,
+   207→    price: 245000,
+   208→    rating: 4.9,
+   209→    reviews: 38,
+   210→    featured: true,
+   211→    hero: img("1613490493576-7fde63acd811", 2400),
+   212→    thumbnail: img("1613490493576-7fde63acd811", 900),
+   213→    description:
+   214→      "A statement residence composed of cantilevered volumes, floor-to-ceiling glass and a 25-metre infinity pool that melts into the horizon.",
+   215→    story: [
+   216→      "Designed for a young family who entertain frequently, the Aurora Residence dissolves the line between interior and landscape. A double-height entry hall draws the eye toward a fully glazed rear elevation, where the living room spills onto a covered terrace and pool deck.",
+   217→      "The ground floor is given over to communal life — kitchen, dining and living flow as one continuous volume, anchored by a cast-concrete fireplace. A discreet wing tucks the master suite, study and guest bedroom behind the garage, keeping the public and private realms apart.",
+   218→      "Upstairs, two ensuite bedrooms share a family lounge that opens onto a private terrace. Materials throughout — limed oak, brushed limestone, blackened steel — were chosen to age gracefully rather than impress on day one.",
+   219→      "The Aurora is not a house that shouts. It is a house that, on the right evening, makes you forget there is a building at all.",
+   220→    ],
+   221→    gallery: [
+   222→      { id: "g1", type: "image", src: img("1613490493576-7fde63acd811", 2000), span: "full", caption: "Rear elevation at dusk" },
+   223→      { id: "g2", type: "image", src: img("1600585154340-be6161a56a0c", 1200), span: "tall", caption: "Pool terrace" },
+   224→      { id: "g3", type: "image", src: img("1480074568708-e7b720bb3f09", 1200), span: "small", caption: "Living volume" },
+   225→      { id: "g4", type: "panoramic", src: img("1600607687939-ce8a6c25118c", 2400), span: "wide", caption: "Aerial approach" },
+   226→      { id: "g5", type: "video", src: "LXb3EKWsInQ", poster: img("1600566753190-7f6cabf5274c", 1600), span: "wide", caption: "Walkthrough film" },
+   227→      { id: "g6", type: "image", src: img("1600210492486-724fe5c67fb0", 1200), span: "small", caption: "Master suite" },
+   228→      { id: "g7", type: "image", src: img("1600585154526-990dced4db0d", 1200), span: "tall", caption: "Kitchen" },
+   229→    ],
+   230→    videoTour: {
+   231→      src: "LXb3EKWsInQ",
+   232→      poster: img("1600566753190-7f6cabf5274c", 2000),
+   233→      title: "Aurora Residence — Walkthrough",
+   234→    },
+   235→    floorPlans: [
+   236→      { label: "Ground Floor", svg: floorPlanGround("Ground Floor") },
+   237→      { label: "Upper Floor", svg: floorPlanUpper("Upper Floor") },
+   238→    ],
+   239→    specifications: [
+   240→      { label: "Bedrooms", value: "4" },
+   241→      { label: "Bathrooms", value: "4" },
+   242→      { label: "Garage", value: "2 Cars" },
+   243→      { label: "Total Area", value: "320 sqm" },
+   244→      { label: "Kitchen", value: "Open Plan · 22 sqm" },
+   245→      { label: "Dining", value: "Formal · 16 sqm" },
+   246→      { label: "Study", value: "Upper Floor · 14 sqm" },
+   247→      { label: "Laundry", value: "Upper Floor · 8 sqm" },
+   248→    ],
+   249→    exterior: [
+   250→      img("1613490493576-7fde63acd811", 1600),
+   251→      img("1600585154340-be6161a56a0c", 1600),
+   252→      img("1600607687939-ce8a6c25118c", 1600),
+   253→      img("1600566753190-7f6cabf5274c", 1600),
+   254→    ],
+   255→    interiors: {
+   256→      kitchen: img("1600585154526-990dced4db0d", 1400),
+   257→      livingRoom: img("1480074568708-e7b720bb3f09", 1400),
+   258→      bedroom: img("1600210492486-724fe5c67fb0", 1400),
+   259→      bathroom: img("1600121848594-d8644e57abab", 1400),
+   260→      outdoor: img("1600585154340-be6161a56a0c", 1400),
+   261→    },
+   262→    highlights: [
+   263→      "25m infinity pool",
+   264→      "Double-height living volume",
+   265→      "Floor-to-ceiling glazing",
+   266→      "Cast-concrete fireplace",
+   267→      "Walk-in master dressing room",
+   268→    ],
+   269→  },
+   270→  {
+   271→    id: "2",
+   272→    slug: "serene-pavilion",
+   273→    name: "The Serene Pavilion",
+   274→    tagline: "Modern Single-Storey",
+   275→    category: "modern",
+   276→    style: "Modern Minimalist",
+   277→    bedrooms: 3,
+   278→    bathrooms: 2,
+   279→    stories: 1,
+   280→    garage: 2,
+   281→    area: 210,
+   282→    price: 168000,
+   283→    rating: 4.8,
+   284→    reviews: 24,
+   285→    featured: true,
+   286→    hero: img("1600596542815-ffad4c1539a9", 2400),
+   287→    thumbnail: img("1600596542815-ffad4c1539a9", 900),
+   288→    description:
+   289→      "A single-storey pavilion composed around a central courtyard — calm, restrained, and almost monastic in its handling of light.",
+   290→    story: [
+   291→      "The Serene Pavilion was conceived as a retreat from urban density. A continuous roof floats above a perimeter of glass, with a single internal courtyard that brings morning light and a tree into the heart of the plan.",
+   292→      "Three bedrooms occupy the south wing, separated from the open living volume by a discreet gallery. The kitchen is the home's quiet heart — a long island in honed marble, with full-height cabinetry concealed behind panels of pale ash.",
+   293→      "There are no corridors. Every space flows into the next, and the perimeter garden is visible from every room. The architecture does not perform; it simply gets out of the way.",
+   294→    ],
+   295→    gallery: [
+   296→      { id: "g1", type: "image", src: img("1600596542815-ffad4c1539a9", 2000), span: "full", caption: "Approach at golden hour" },
+   297→      { id: "g2", type: "image", src: img("1512917774080-9991f1c4c750", 1200), span: "tall", caption: "Courtyard elevation" },
+   298→      { id: "g3", type: "image", src: img("1583608326591-0c1cf8c4b91d", 1200), span: "small", caption: "Living volume" },
+   299→      { id: "g4", type: "panoramic", src: img("1567767292278-a4f21aa2d36e", 2400), span: "wide", caption: "Dusk elevation" },
+   300→      { id: "g5", type: "video", src: "LXb3EKWsInQ", poster: img("1600596542815-ffad4c1539a9", 1600), span: "wide", caption: "Walkthrough film" },
+   301→      { id: "g6", type: "image", src: img("1556909114-f6e7ad7d3136", 1200), span: "small", caption: "Kitchen island" },
+   302→      { id: "g7", type: "image", src: img("1502672260266-1c1ef2d93688", 1200), span: "tall", caption: "Bedroom" },
+   303→    ],
+   304→    videoTour: {
+   305→      src: "LXb3EKWsInQ",
+   306→      poster: img("1600596542815-ffad4c1539a9", 2000),
+   307→      title: "Serene Pavilion — Walkthrough",
+   308→    },
+   309→    floorPlans: [{ label: "Ground Floor", svg: floorPlanSingle("Ground Floor") }],
+   310→    specifications: [
+   311→      { label: "Bedrooms", value: "3" },
+   312→      { label: "Bathrooms", value: "2" },
+   313→      { label: "Garage", value: "2 Cars" },
+   314→      { label: "Total Area", value: "210 sqm" },
+   315→      { label: "Kitchen", value: "Island · 24 sqm" },
+   316→      { label: "Dining", value: "Open · 14 sqm" },
+   317→      { label: "Study", value: "Optional nook" },
+   318→      { label: "Laundry", value: "Utility · 6 sqm" },
+   319→    ],
+   320→    exterior: [
+   321→      img("1600596542815-ffad4c1539a9", 1600),
+   322→      img("1512917774080-9991f1c4c750", 1600),
+   323→      img("1567767292278-a4f21aa2d36e", 1600),
+   324→      img("1564013799919-ab600027ffc6", 1600),
+   325→    ],
+   326→    interiors: {
+   327→      kitchen: img("1556909114-f6e7ad7d3136", 1400),
+   328→      livingRoom: img("1583608326591-0c1cf8c4b91d", 1400),
+   329→      bedroom: img("1502672260266-1c1ef2d93688", 1400),
+   330→      bathroom: img("1600210492493-0946915537e6", 1400),
+   331→      outdoor: img("1512917774080-9991f1c4c750", 1400),
+   332→    },
+   333→    highlights: [
+   334→      "Central landscaped courtyard",
+   335→      "Floating roof with clerestory light",
+   336→      "Honed marble kitchen island",
+   337→      "Full-height perimeter glazing",
+   338→      "No corridors — open flow",
+   339→    ],
+   340→  },
+   341→  {
+   342→    id: "3",
+   343→    slug: "coastal-maisonette",
+   344→    name: "The Coastal Maisonette",
+   345→    tagline: "Two-Storey Townhouse",
+   346→    category: "maisonettes",
+   347→    style: "Contemporary Coastal",
+   348→    bedrooms: 3,
+   349→    bathrooms: 3,
+   350→    stories: 2,
+   351→    garage: 1,
+   352→    area: 180,
+   353→    price: 132000,
+   354→    rating: 4.7,
+   355→    reviews: 19,
+   356→    featured: true,
+   357→    hero: img("1600585154340-be6161a56a0c", 2400),
+   358→    thumbnail: img("1600585154340-be6161a56a0c", 900),
+   359→    description:
+   360→      "A vertical townhouse designed for a narrow coastal plot — sleeping above, living below, with a rooftop terrace that captures the sea.",
+   361→    story: [
+   362→      "Maisonettes make sense where land is scarce. The Coastal Maisonette stacks its program vertically: living, dining and kitchen occupy the ground floor and open onto a walled garden; bedrooms sit one floor above; and a private roof terrace caps the whole.",
+   363→      "A central stair in white oak is the home's spine, drawing light from a rooflight down through every level. Materials are marine-grade and honest — bleached oak, white render, and brass fittings that will patinate with the salt air.",
+   364→    ],
+   365→    gallery: [
+   366→      { id: "g1", type: "image", src: img("1600585154340-be6161a56a0c", 2000), span: "full", caption: "Street elevation" },
+   367→      { id: "g2", type: "image", src: img("1600566753086-00f18fb6b3ea", 1200), span: "tall", caption: "Stair volume" },
+   368→      { id: "g3", type: "image", src: img("1493809842364-78817add7ffb", 1200), span: "small", caption: "Living level" },
+   369→      { id: "g4", type: "panoramic", src: img("1600607687939-ce8a6c25118c", 2400), span: "wide", caption: "Roof terrace view" },
+   370→      { id: "g5", type: "video", src: "LXb3EKWsInQ", poster: img("1600585154340-be6161a56a0c", 1600), span: "wide", caption: "Walkthrough film" },
+   371→      { id: "g6", type: "image", src: img("1517823382935-51bfcb0ec6bc", 1200), span: "small", caption: "Bedroom" },
+   372→      { id: "g7", type: "image", src: img("1552321554-5fefe8c9ef14", 1200), span: "tall", caption: "Bathroom" },
+   373→    ],
+   374→    videoTour: {
+   375→      src: "LXb3EKWsInQ",
+   376→      poster: img("1600585154340-be6161a56a0c", 2000),
+   377→      title: "Coastal Maisonette — Walkthrough",
+   378→    },
+   379→    floorPlans: [
+   380→      { label: "Ground Floor", svg: floorPlanGround("Ground Floor") },
+   381→      { label: "Upper Floor", svg: floorPlanUpper("Upper Floor") },
+   382→    ],
+   383→    specifications: [
+   384→      { label: "Bedrooms", value: "3" },
+   385→      { label: "Bathrooms", value: "3" },
+   386→      { label: "Garage", value: "1 Car" },
+   387→      { label: "Total Area", value: "180 sqm" },
+   388→      { label: "Kitchen", value: "Galley · 16 sqm" },
+   389→      { label: "Dining", value: "Open · 12 sqm" },
+   390→      { label: "Study", value: "Roof level nook" },
+   391→      { label: "Laundry", value: "Utility · 5 sqm" },
+   392→    ],
+   393→    exterior: [
+   394→      img("1600585154340-be6161a56a0c", 1600),
+   395→      img("1600566753086-00f18fb6b3ea", 1600),
+   396→      img("1600607687939-ce8a6c25118c", 1600),
+   397→      img("1564013799919-ab600027ffc6", 1600),
+   398→    ],
+   399→    interiors: {
+   400→      kitchen: img("1600585154526-990dced4db0d", 1400),
+   401→      livingRoom: img("1493809842364-78817add7ffb", 1400),
+   402→      bedroom: img("1517823382935-51bfcb0ec6bc", 1400),
+   403→      bathroom: img("1552321554-5fefe8c9ef14", 1400),
+   404→      outdoor: img("1600607687939-ce8a6c25118c", 1400),
+   405→    },
+   406→    highlights: [
+   407→      "Roof terrace with sea view",
+   408→      "Central oak stair with rooflight",
+   409→      "Marine-grade materials",
+   410→      "Walled ground-floor garden",
+   411→      "Brass fittings that patinate",
+   412→    ],
+   413→  },
+   414→  {
+   415→    id: "4",
+   416→    slug: "garden-bungalow",
+   417→    name: "The Garden Bungalow",
+   418→    tagline: "Single-Storey Family Home",
+   419→    category: "bungalows",
+   420→    style: "Garden Bungalow",
+   421→    bedrooms: 3,
+   422→    bathrooms: 2,
+   423→    stories: 1,
+   424→    garage: 1,
+   425→    area: 165,
+   426→    price: 118000,
+   427→    rating: 4.8,
+   428→    reviews: 31,
+   429→    featured: true,
+   430→    hero: img("1512917774080-9991f1c4c750", 2400),
+   431→    thumbnail: img("1512917774080-9991f1c4c750", 900),
+   432→    description:
+   433→      "A ground-hugging bungalow that wraps around a south-facing garden — designed for ageing in place and indoor-outdoor living.",
+   434→    story: [
+   435→      "The Garden Bungalow is, above all, a long-term home. Single-storey planning means no stairs to navigate in later life; wide doorways and a level threshold to the terrace make the plan genuinely accessible.",
+   436→      "A continuous verandah runs along the south façade, deep enough to sit out on at any time of day. Inside, three bedrooms sit quietly off a central hallway; the living and dining rooms face the garden.",
+   437→      "The plan is deliberately ordinary — and that is its quiet virtue. There are no gimmicks, only generous rooms, good light, and a direct relationship to the garden.",
+   438→    ],
+   439→    gallery: [
+   440→      { id: "g1", type: "image", src: img("1512917774080-9991f1c4c750", 2000), span: "full", caption: "Garden elevation" },
+   441→      { id: "g2", type: "image", src: img("1564013799919-ab600027ffc6", 1200), span: "tall", caption: "Verandah" },
+   442→      { id: "g3", type: "image", src: img("1493809842364-78817add7ffb", 1200), span: "small", caption: "Living" },
+   443→      { id: "g4", type: "panoramic", src: img("1600596542815-ffad4c1539a9", 2400), span: "wide", caption: "Site plan" },
+   444→      { id: "g5", type: "video", src: "LXb3EKWsInQ", poster: img("1512917774080-9991f1c4c750", 1600), span: "wide", caption: "Walkthrough film" },
+   445→      { id: "g6", type: "image", src: img("1556909114-f6e7ad7d3136", 1200), span: "small", caption: "Kitchen" },
+   446→      { id: "g7", type: "image", src: img("1505873242700-f289a29e1e0f", 1200), span: "tall", caption: "Bedroom" },
+   447→    ],
+   448→    videoTour: {
+   449→      src: "LXb3EKWsInQ",
+   450→      poster: img("1512917774080-9991f1c4c750", 2000),
+   451→      title: "Garden Bungalow — Walkthrough",
+   452→    },
+   453→    floorPlans: [{ label: "Ground Floor", svg: floorPlanSingle("Ground Floor") }],
+   454→    specifications: [
+   455→      { label: "Bedrooms", value: "3" },
+   456→      { label: "Bathrooms", value: "2" },
+   457→      { label: "Garage", value: "1 Car" },
+   458→      { label: "Total Area", value: "165 sqm" },
+   459→      { label: "Kitchen", value: "Open · 18 sqm" },
+   460→      { label: "Dining", value: "Open · 12 sqm" },
+   461→      { label: "Study", value: "Optional alcove" },
+   462→      { label: "Laundry", value: "Utility · 6 sqm" },
+   463→    ],
+   464→    exterior: [
+   465→      img("1512917774080-9991f1c4c750", 1600),
+   466→      img("1564013799919-ab600027ffc6", 1600),
+   467→      img("1600596542815-ffad4c1539a9", 1600),
+   468→      img("1567767292278-a4f21aa2d36e", 1600),
+   469→    ],
+   470→    interiors: {
+   471→      kitchen: img("1556909114-f6e7ad7d3136", 1400),
+   472→      livingRoom: img("1493809842364-78817add7ffb", 1400),
+   473→      bedroom: img("1505873242700-f289a29e1e0f", 1400),
+   474→      bathroom: img("1600210492493-0946915537e6", 1400),
+   475→      outdoor: img("1564013799919-ab600027ffc6", 1400),
+   476→    },
+   477→    highlights: [
+   478→      "Fully accessible single-storey plan",
+   479→      "South-facing verandah",
+   480→      "Level threshold to garden",
+   481→      "Wide doorways throughout",
+   482→      "Low-maintenance materials",
+   483→    ],
+   484→  },
+   485→  {
+   486→    id: "5",
+   487→    slug: "courtyard-villa",
+   488→    name: "The Courtyard Villa",
+   489→    tagline: "Mediterranean Villa",
+   490→    category: "villas",
+   491→    style: "Mediterranean Villa",
+   492→    bedrooms: 5,
+   493→    bathrooms: 5,
+   494→    stories: 2,
+   495→    garage: 3,
+   496→    area: 420,
+   497→    price: 385000,
+   498→    rating: 4.9,
+   499→    reviews: 42,
+   500→    featured: true,
+   501→    hero: img("1600607687939-ce8a6c25118c", 2400),
+   502→    thumbnail: img("1600607687939-ce8a6c25118c", 900),
+   503→    description:
+   504→      "A villa organised around a central courtyard and loggia — shaded, calm, and built for long lunches that drift into the evening.",
+   505→    story: [
+   506→      "The Courtyard Villa draws on a Mediterranean typology that is several thousand years old: rooms arranged around a shaded central court, with a loggia that mediates between house and garden. Cross-ventilation, deep eaves and a thermal mass wall keep the interior cool without mechanical air-conditioning.",
+   507→      "Five bedrooms are split across both floors; the master occupies its own wing with a private terrace. The kitchen, pantry and service spaces are discreetly tucked behind the dining room so that the household can function without disturbing the formal rooms.",
+   508→    ],
+   509→    gallery: [
+   510→      { id: "g1", type: "image", src: img("1600607687939-ce8a6c25118c", 2000), span: "full", caption: "Loggia at dusk" },
+   511→      { id: "g2", type: "image", src: img("1600585154340-be6161a56a0c", 1200), span: "tall", caption: "Pool" },
+   512→      { id: "g3", type: "image", src: img("1480074568708-e7b720bb3f09", 1200), span: "small", caption: "Living hall" },
+   513→      { id: "g4", type: "panoramic", src: img("1613490493576-7fde63acd811", 2400), span: "wide", caption: "Aerial" },
+   514→      { id: "g5", type: "video", src: "LXb3EKWsInQ", poster: img("1600607687939-ce8a6c25118c", 1600), span: "wide", caption: "Walkthrough film" },
+   515→      { id: "g6", type: "image", src: img("1600210492486-724fe5c67fb0", 1200), span: "small", caption: "Master suite" },
+   516→      { id: "g7", type: "image", src: img("1600585154526-990dced4db0d", 1200), span: "tall", caption: "Kitchen" },
+   517→    ],
+   518→    videoTour: {
+   519→      src: "LXb3EKWsInQ",
+   520→      poster: img("1600607687939-ce8a6c25118c", 2000),
+   521→      title: "Courtyard Villa — Walkthrough",
+   522→    },
+   523→    floorPlans: [
+   524→      { label: "Ground Floor", svg: floorPlanGround("Ground Floor") },
+   525→      { label: "Upper Floor", svg: floorPlanUpper("Upper Floor") },
+   526→    ],
+   527→    specifications: [
+   528→      { label: "Bedrooms", value: "5" },
+   529→      { label: "Bathrooms", value: "5" },
+   530→      { label: "Garage", value: "3 Cars" },
+   531→      { label: "Total Area", value: "420 sqm" },
+   532→      { label: "Kitchen", value: "Plus Pantry · 28 sqm" },
+   533→      { label: "Dining", value: "Formal · 24 sqm" },
+   534→      { label: "Study", value: "Library · 18 sqm" },
+   535→      { label: "Laundry", value: "Service · 12 sqm" },
+   536→    ],
+   537→    exterior: [
+   538→      img("1600607687939-ce8a6c25118c", 1600),
+   539→      img("1600585154340-be6161a56a0c", 1600),
+   540→      img("1613490493576-7fde63acd811", 1600),
+   541→      img("1600566753190-7f6cabf5274c", 1600),
+   542→    ],
+   543→    interiors: {
+   544→      kitchen: img("1600585154526-990dced4db0d", 1400),
+   545→      livingRoom: img("1480074568708-e7b720bb3f09", 1400),
+   546→      bedroom: img("1600210492486-724fe5c67fb0", 1400),
+   547→      bathroom: img("1600121848594-d8644e57abab", 1400),
+   548→      outdoor: img("1600585154340-be6161a56a0c", 1400),
+   549→    },
+   550→    highlights: [
+   551→      "Central shaded courtyard",
+   552→      "Deep loggia with summer kitchen",
+   553→      "Cross-ventilation, no AC required",
+   554→      "Three-car garage plus service",
+   555→      "Master wing with private terrace",
+   556→    ],
+   557→  },
+   558→  {
+   559→    id: "6",
+   560→    slug: "ashlar-house",
+   561→    name: "Ashlar House",
+   562→    tagline: "Compact Modern Home",
+   563→    category: "small-homes",
+   564→    style: "Modern Compact",
+   565→    bedrooms: 2,
+   566→    bathrooms: 1,
+   567→    stories: 1,
+   568→    garage: 1,
+   569→    area: 96,
+   570→    price: 72000,
+   571→    rating: 4.6,
+   572→    reviews: 27,
+   573→    featured: true,
+   574→    hero: img("1600566753086-00f18fb6b3ea", 2400),
+   575→    thumbnail: img("1600566753086-00f18fb6b3ea", 900),
+   576→    description:
+   577→      "A 96-square-metre home that proves small does not have to mean cramped — generous ceilings, one big room, two quiet bedrooms.",
+   578→    story: [
+   579→      "Ashlar House was designed for first-time buyers who refuse to compromise on quality. Every square metre has been earned: the kitchen, dining and living rooms share one generous volume with a 3.6-metre ceiling; the two bedrooms sit behind a single wall of sliding ash doors.",
+   580→      "Storage is built in everywhere — there are no wardrobes that eat floor area, only walls that do double duty. The bathroom is generous; the utility is compact. A small deck extends the living room into the garden on summer evenings.",
+   581→    ],
+   582→    gallery: [
+   583→      { id: "g1", type: "image", src: img("1600566753086-00f18fb6b3ea", 2000), span: "full", caption: "Front elevation" },
+   584→      { id: "g2", type: "image", src: img("1583608326591-0c1cf8c4b91d", 1200), span: "tall", caption: "Living volume" },
+   585→      { id: "g3", type: "image", src: img("1556909114-f6e7ad7d3136", 1200), span: "small", caption: "Kitchen" },
+   586→      { id: "g4", type: "panoramic", src: img("1512917774080-9991f1c4c750", 2400), span: "wide", caption: "Garden side" },
+   587→      { id: "g5", type: "video", src: "LXb3EKWsInQ", poster: img("1600566753086-00f18fb6b3ea", 1600), span: "wide", caption: "Walkthrough film" },
+   588→      { id: "g6", type: "image", src: img("1502672260266-1c1ef2d93688", 1200), span: "small", caption: "Bedroom" },
+   589→    ],
+   590→    videoTour: {
+   591→      src: "LXb3EKWsInQ",
+   592→      poster: img("1600566753086-00f18fb6b3ea", 2000),
+   593→      title: "Ashlar House — Walkthrough",
+   594→    },
+   595→    floorPlans: [{ label: "Ground Floor", svg: floorPlanSingle("Ground Floor") }],
+   596→    specifications: [
+   597→      { label: "Bedrooms", value: "2" },
+   598→      { label: "Bathrooms", value: "1" },
+   599→      { label: "Garage", value: "1 Car" },
+   600→      { label: "Total Area", value: "96 sqm" },
+   601→      { label: "Kitchen", value: "Open · 14 sqm" },
+   602→      { label: "Dining", value: "Open · 10 sqm" },
+   603→      { label: "Study", value: "Fold-down desk" },
+   604→      { label: "Laundry", value: "Closet · 3 sqm" },
+   605→    ],
+   606→    exterior: [
+   607→      img("1600566753086-00f18fb6b3ea", 1600),
+   608→      img("1512917774080-9991f1c4c750", 1600),
+   609→      img("1600596542815-ffad4c1539a9", 1600),
+   610→      img("1567767292278-a4f21aa2d36e", 1600),
+   611→    ],
+   612→    interiors: {
+   613→      kitchen: img("1556909114-f6e7ad7d3136", 1400),
+   614→      livingRoom: img("1583608326591-0c1cf8c4b91d", 1400),
+   615→      bedroom: img("1502672260266-1c1ef2d93688", 1400),
+   616→      bathroom: img("1600210492493-0946915537e6", 1400),
+   617→      outdoor: img("1512917774080-9991f1c4c750", 1400),
+   618→    },
+   619→    highlights: [
+   620→      "3.6m ceiling in living volume",
+   621→      "Built-in storage throughout",
+   622→      "Compact 96 sqm footprint",
+   623→      "Garden deck extension",
+   624→      "Passive solar orientation",
+   625→    ],
+   626→  },
+   627→  {
+   628→    id: "7",
+   629→    slug: "linden-mews",
+   630→    name: "Linden Mews",
+   631→    tagline: "Modern Townhouse",
+   632→    category: "maisonettes",
+   633→    style: "Urban Modern",
+   634→    bedrooms: 3,
+   635→    bathrooms: 2,
+   636→    stories: 2,
+   637→    garage: 1,
+   638→    area: 150,
+   639→    price: 110000,
+   640→    rating: 4.7,
+   641→    reviews: 22,
+   642→    featured: false,
+   643→    hero: img("1564013799919-ab600027ffc6", 2400),
+   644→    thumbnail: img("1564013799919-ab600027ffc6", 900),
+   645→    description:
+   646→      "A narrow-frontage townhouse that turns a tight urban plot into a quiet, light-filled family home.",
+   647→    story: [
+   648→      "Linden Mews is built to the edge of its boundary on three sides. Where most townhouses would feel dark, a triple-height stairwell with a rooflight pulls daylight deep into the plan.",
+   649→      "Living rooms face the street; bedrooms face a private rear courtyard. The ground floor is concrete for thermal mass; the upper floors are timber for warmth and speed of construction.",
+   650→    ],
+   651→    gallery: [
+   652→      { id: "g1", type: "image", src: img("1564013799919-ab600027ffc6", 2000), span: "full", caption: "Street frontage" },
+   653→      { id: "g2", type: "image", src: img("1600566753086-00f18fb6b3ea", 1200), span: "tall", caption: "Stair volume" },
+   654→      { id: "g3", type: "image", src: img("1493809842364-78817add7ffb", 1200), span: "small", caption: "Living" },
+   655→      { id: "g4", type: "video", src: "LXb3EKWsInQ", poster: img("1564013799919-ab600027ffc6", 1600), span: "wide", caption: "Walkthrough film" },
+   656→      { id: "g5", type: "image", src: img("1517823382935-51bfcb0ec6bc", 1200), span: "small", caption: "Bedroom" },
+   657→    ],
+   658→    videoTour: {
+   659→      src: "LXb3EKWsInQ",
+   660→      poster: img("1564013799919-ab600027ffc6", 2000),
+   661→      title: "Linden Mews — Walkthrough",
+   662→    },
+   663→    floorPlans: [
+   664→      { label: "Ground Floor", svg: floorPlanGround("Ground Floor") },
+   665→      { label: "Upper Floor", svg: floorPlanUpper("Upper Floor") },
+   666→    ],
+   667→    specifications: [
+   668→      { label: "Bedrooms", value: "3" },
+   669→      { label: "Bathrooms", value: "2" },
+   670→      { label: "Garage", value: "1 Car" },
+   671→      { label: "Total Area", value: "150 sqm" },
+   672→      { label: "Kitchen", value: "Galley · 14 sqm" },
+   673→      { label: "Dining", value: "Open · 11 sqm" },
+   674→      { label: "Study", value: "Mezzanine desk" },
+   675→      { label: "Laundry", value: "Closet · 4 sqm" },
+   676→    ],
+   677→    exterior: [
+   678→      img("1564013799919-ab600027ffc6", 1600),
+   679→      img("1600566753086-00f18fb6b3ea", 1600),
+   680→      img("1600596542815-ffad4c1539a9", 1600),
+   681→      img("1567767292278-a4f21aa2d36e", 1600),
+   682→    ],
+   683→    interiors: {
+   684→      kitchen: img("1600585154526-990dced4db0d", 1400),
+   685→      livingRoom: img("1493809842364-78817add7ffb", 1400),
+   686→      bedroom: img("1517823382935-51bfcb0ec6bc", 1400),
+   687→      bathroom: img("1552321554-5fefe8c9ef14", 1400),
+   688→      outdoor: img("1564013799919-ab600027ffc6", 1400),
+   689→    },
+   690→    highlights: [
+   691→      "Triple-height stairwell",
+   692→      "Thermal mass ground floor",
+   693→      "Private rear courtyard",
+   694→      "Narrow 6m frontage",
+   695→      "Timber upper structure",
+   696→    ],
+   697→  },
+   698→  {
+   699→    id: "8",
+   700→    slug: "monolith-studio",
+   701→    name: "Monolith Studio",
+   702→    tagline: "Single-Bedroom Retreat",
+   703→    category: "small-homes",
+   704→    style: "Modern Minimalist",
+   705→    bedrooms: 1,
+   706→    bathrooms: 1,
+   707→    stories: 1,
+   708→    garage: 0,
+   709→    area: 62,
+   710→    price: 54000,
+   711→    rating: 4.5,
+   712→    reviews: 17,
+   713→    featured: false,
+   714→    hero: img("1567767292278-a4f21aa2d36e", 2400),
+   715→    thumbnail: img("1567767292278-a4f21aa2d36e", 900),
+   716→    description:
+   717→      "A 62-square-metre studio retreat designed for a writer — one big room, one quiet bedroom, one long view.",
+   718→    story: [
+   719→      "Monolith Studio is the smallest house in the catalog and arguably the most rigorous. A single volume contains kitchen, living and workspace; a sleeping alcove sits behind a pivoting oak panel; the bathroom is the only fully enclosed room.",
+   720→      "The north wall is a floor-to-ceiling window that frames a single view — chosen on site, not in plan. There is nowhere to hide clutter, which is the point.",
+   721→    ],
+   722→    gallery: [
+   723→      { id: "g1", type: "image", src: img("1567767292278-a4f21aa2d36e", 2000), span: "full", caption: "Front elevation" },
+   724→      { id: "g2", type: "image", src: img("1583608326591-0c1cf8c4b91d", 1200), span: "tall", caption: "Main volume" },
+   725→      { id: "g3", type: "image", src: img("1556909114-f6e7ad7d3136", 1200), span: "small", caption: "Kitchen" },
+   726→      { id: "g4", type: "video", src: "LXb3EKWsInQ", poster: img("1567767292278-a4f21aa2d36e", 1600), span: "wide", caption: "Walkthrough film" },
+   727→    ],
+   728→    videoTour: {
+   729→      src: "LXb3EKWsInQ",
+   730→      poster: img("1567767292278-a4f21aa2d36e", 2000),
+   731→      title: "Monolith Studio — Walkthrough",
+   732→    },
+   733→    floorPlans: [{ label: "Ground Floor", svg: floorPlanSingle("Ground Floor") }],
+   734→    specifications: [
+   735→      { label: "Bedrooms", value: "1" },
+   736→      { label: "Bathrooms", value: "1" },
+   737→      { label: "Garage", value: "Carport" },
+   738→      { label: "Total Area", value: "62 sqm" },
+   739→      { label: "Kitchen", value: "Open · 10 sqm" },
+   740→      { label: "Dining", value: "Open · 8 sqm" },
+   741→      { label: "Study", value: "Workspace nook" },
+   742→      { label: "Laundry", value: "Closet · 2 sqm" },
+   743→    ],
+   744→    exterior: [
+   745→      img("1567767292278-a4f21aa2d36e", 1600),
+   746→      img("1600566753086-00f18fb6b3ea", 1600),
+   747→      img("1512917774080-9991f1c4c750", 1600),
+   748→      img("1600596542815-ffad4c1539a9", 1600),
+   749→    ],
+   750→    interiors: {
+   751→      kitchen: img("1556909114-f6e7ad7d3136", 1400),
+   752→      livingRoom: img("1583608326591-0c1cf8c4b91d", 1400),
+   753→      bedroom: img("1502672260266-1c1ef2d93688", 1400),
+   754→      bathroom: img("1600210492493-0946915537e6", 1400),
+   755→      outdoor: img("1567767292278-a4f21aa2d36e", 1400),
+   756→    },
+   757→    highlights: [
+   758→      "Floor-to-ceiling view window",
+   759→      "Pivoting oak sleeping panel",
+   760→      "62 sqm rigorous footprint",
+   761→      "Workspace integrated",
+   762→      "No internal corridors",
+   763→    ],
+   764→  },
+   765→  {
+   766→    id: "9",
+   767→    slug: "verdant-modern",
+   768→    name: "Verdant Modern",
+   769→    tagline: "Modern Family Home",
+   770→    category: "modern",
+   771→    style: "Modern Family",
+   772→    bedrooms: 4,
+   773→    bathrooms: 3,
+   774→    stories: 2,
+   775→    garage: 2,
+   776→    area: 245,
+   777→    price: 192000,
+   778→    rating: 4.8,
+   779→    reviews: 29,
+   780→    featured: false,
+   781→    hero: img("1600596542815-ffad4c1539a9", 2400),
+   782→    thumbnail: img("1600596542815-ffad4c1539a9", 900),
+   783→    description:
+   784→      "A modern family home wrapped around a protected garden — designed for teenagers, dogs, and a long view of the sky.",
+   785→    story: [
+   786→      "Verdant Modern splits the typical family home into two wings — sleeping and living — connected by a glazed bridge that hovers above the garden. The split keeps teenage bedrooms away from the living-room noise without putting them on a separate floor.",
+   787→      "A flat roof with a deep overhang shades the south-facing glass; a green roof on the garage softens the building's profile from upper-floor windows.",
+   788→    ],
+   789→    gallery: [
+   790→      { id: "g1", type: "image", src: img("1600596542815-ffad4c1539a9", 2000), span: "full", caption: "Garden wing" },
+   791→      { id: "g2", type: "image", src: img("1480074568708-e7b720bb3f09", 1200), span: "tall", caption: "Living" },
+   792→      { id: "g3", type: "image", src: img("1556909114-f6e7ad7d3136", 1200), span: "small", caption: "Kitchen" },
+   793→      { id: "g4", type: "panoramic", src: img("1600585154340-be6161a56a0c", 2400), span: "wide", caption: "Site" },
+   794→      { id: "g5", type: "video", src: "LXb3EKWsInQ", poster: img("1600596542815-ffad4c1539a9", 1600), span: "wide", caption: "Walkthrough film" },
+   795→      { id: "g6", type: "image", src: img("1600210492486-724fe5c67fb0", 1200), span: "small", caption: "Master" },
+   796→    ],
+   797→    videoTour: {
+   798→      src: "LXb3EKWsInQ",
+   799→      poster: img("1600596542815-ffad4c1539a9", 2000),
+   800→      title: "Verdant Modern — Walkthrough",
+   801→    },
+   802→    floorPlans: [
+   803→      { label: "Ground Floor", svg: floorPlanGround("Ground Floor") },
+   804→      { label: "Upper Floor", svg: floorPlanUpper("Upper Floor") },
+   805→    ],
+   806→    specifications: [
+   807→      { label: "Bedrooms", value: "4" },
+   808→      { label: "Bathrooms", value: "3" },
+   809→      { label: "Garage", value: "2 Cars" },
+   810→      { label: "Total Area", value: "245 sqm" },
+   811→      { label: "Kitchen", value: "Island · 20 sqm" },
+   812→      { label: "Dining", value: "Open · 14 sqm" },
+   813→      { label: "Study", value: "Bridge office" },
+   814→      { label: "Laundry", value: "Utility · 6 sqm" },
+   815→    ],
+   816→    exterior: [
+   817→      img("1600596542815-ffad4c1539a9", 1600),
+   818→      img("1600585154340-be6161a56a0c", 1600),
+   819→      img("1480074568708-e7b720bb3f09", 1600),
+   820→      img("1512917774080-9991f1c4c750", 1600),
+   821→    ],
+   822→    interiors: {
+   823→      kitchen: img("1556909114-f6e7ad7d3136", 1400),
+   824→      livingRoom: img("1480074568708-e7b720bb3f09", 1400),
+   825→      bedroom: img("1600210492486-724fe5c67fb0", 1400),
+   826→      bathroom: img("1600121848594-d8644e57abab", 1400),
+   827→      outdoor: img("1600585154340-be6161a56a0c", 1400),
+   828→    },
+   829→    highlights: [
+   830→      "Glazed bridge connector",
+   831→      "Deep south overhang",
+   832→      "Green roof on garage",
+   833→      "Two-wing split plan",
+   834→      "Teenage wing acoustics",
+   835→    ],
+   836→  },
+   837→  {
+   838→    id: "10",
+   839→    slug: "marlowe-bungalow",
+   840→    name: "Marlowe Bungalow",
+   841→    tagline: "Single-Storey Garden Home",
+   842→    category: "bungalows",
+   843→    style: "Modern Bungalow",
+   844→    bedrooms: 2,
+   845→    bathrooms: 2,
+   846→    stories: 1,
+   847→    garage: 1,
+   848→    area: 140,
+   849→    price: 102000,
+   850→    rating: 4.7,
+   851→    reviews: 18,
+   852→    featured: false,
+   853→    hero: img("1512917774080-9991f1c4c750", 2400),
+   854→    thumbnail: img("1512917774080-9991f1c4c750", 900),
+   855→    description:
+   856→      "A two-bedroom bungalow with an L-shaped plan that cradles a private garden — perfect as a starter home or downsizer.",
+   857→    story: [
+   858→      "The Marlowe Bungalow's L-shape creates a sheltered garden court on the south-east corner, protected from prevailing winds and overlooked only by the living room and master bedroom.",
+   859→      "Two bedrooms and two bathrooms make it flexible — a guest suite doubles as a home office; the laundry is full-height and could become a third bedroom should the family grow.",
+   860→    ],
+   861→    gallery: [
+   862→      { id: "g1", type: "image", src: img("1512917774080-9991f1c4c750", 2000), span: "full", caption: "L-shaped elevation" },
+   863→      { id: "g2", type: "image", src: img("1564013799919-ab600027ffc6", 1200), span: "tall", caption: "Garden court" },
+   864→      { id: "g3", type: "image", src: img("1493809842364-78817add7ffb", 1200), span: "small", caption: "Living" },
+   865→      { id: "g4", type: "video", src: "LXb3EKWsInQ", poster: img("1512917774080-9991f1c4c750", 1600), span: "wide", caption: "Walkthrough film" },
+   866→    ],
+   867→    videoTour: {
+   868→      src: "LXb3EKWsInQ",
+   869→      poster: img("1512917774080-9991f1c4c750", 2000),
+   870→      title: "Marlowe Bungalow — Walkthrough",
+   871→    },
+   872→    floorPlans: [{ label: "Ground Floor", svg: floorPlanSingle("Ground Floor") }],
+   873→    specifications: [
+   874→      { label: "Bedrooms", value: "2" },
+   875→      { label: "Bathrooms", value: "2" },
+   876→      { label: "Garage", value: "1 Car" },
+   877→      { label: "Total Area", value: "140 sqm" },
+   878→      { label: "Kitchen", value: "Open · 16 sqm" },
+   879→      { label: "Dining", value: "Open · 11 sqm" },
+   880→      { label: "Study", value: "Guest suite flex" },
+   881→      { label: "Laundry", value: "Full · 7 sqm" },
+   882→    ],
+   883→    exterior: [
+   884→      img("1512917774080-9991f1c4c750", 1600),
+   885→      img("1564013799919-ab600027ffc6", 1600),
+   886→      img("1600596542815-ffad4c1539a9", 1600),
+   887→      img("1567767292278-a4f21aa2d36e", 1600),
+   888→    ],
+   889→    interiors: {
+   890→      kitchen: img("1600585154526-990dced4db0d", 1400),
+   891→      livingRoom: img("1493809842364-78817add7ffb", 1400),
+   892→      bedroom: img("1505873242700-f289a29e1e0f", 1400),
+   893→      bathroom: img("1552321554-5fefe8c9ef14", 1400),
+   894→      outdoor: img("1564013799919-ab600027ffc6", 1400),
+   895→    },
+   896→    highlights: [
+   897→      "L-shaped protected garden",
+   898→      "Flexible guest suite",
+   899→      "Single-storey accessibility",
+   900→      "Full-height laundry",
+   901→      "South-east orientation",
+   902→    ],
+   903→  },
+   904→  {
+   905→    id: "11",
+   906→    slug: "petra-villa",
+   907→    name: "Petra Villa",
+   908→    tagline: "Hillside Luxury Villa",
+   909→    category: "luxury",
+   910→    style: "Hillside Luxury",
+   911→    bedrooms: 5,
+   912→    bathrooms: 6,
+   913→    stories: 3,
+   914→    garage: 3,
+   915→    area: 510,
+   916→    price: 510000,
+   917→    rating: 5.0,
+   918→    reviews: 14,
+   919→    featured: false,
+   920→    hero: img("1600585154340-be6161a56a0c", 2400),
+   921→    thumbnail: img("1600585154340-be6161a56a0c", 900),
+   922→    description:
+   923→      "A three-storey hillside villa cut into the slope — every level has a 270° view, the lowest hosts a spa and wine cellar.",
+   924→    story: [
+   925→      "Petra Villa is the catalog's most ambitious residence. Built into a 30-degree slope, the home steps down the hillside in three concrete platforms — each one opening onto a terrace that becomes the roof of the level below.",
+   926→      "The top floor is given over to living and entertaining; the middle floor to bedrooms; the lowest floor, half-buried in the hillside, houses the spa, gym, wine cellar and cinema. A glass elevator threads all three.",
+   927→    ],
+   928→    gallery: [
+   929→      { id: "g1", type: "image", src: img("1600585154340-be6161a56a0c", 2000), span: "full", caption: "Hillside elevation" },
+   930→      { id: "g2", type: "image", src: img("1613490493576-7fde63acd811", 1200), span: "tall", caption: "Pool terrace" },
+   931→      { id: "g3", type: "image", src: img("1480074568708-e7b720bb3f09", 1200), span: "small", caption: "Living hall" },
+   932→      { id: "g4", type: "panoramic", src: img("1600607687939-ce8a6c25118c", 2400), span: "wide", caption: "Site panorama" },
+   933→      { id: "g5", type: "video", src: "LXb3EKWsInQ", poster: img("1600585154340-be6161a56a0c", 1600), span: "wide", caption: "Walkthrough film" },
+   934→      { id: "g6", type: "image", src: img("1600210492486-724fe5c67fb0", 1200), span: "small", caption: "Master" },
+   935→      { id: "g7", type: "image", src: img("1600121848594-d8644e57abab", 1200), span: "tall", caption: "Spa" },
+   936→    ],
+   937→    videoTour: {
+   938→      src: "LXb3EKWsInQ",
+   939→      poster: img("1600585154340-be6161a56a0c", 2000),
+   940→      title: "Petra Villa — Walkthrough",
+   941→    },
+   942→    floorPlans: [
+   943→      { label: "Ground Floor", svg: floorPlanGround("Ground Floor") },
+   944→      { label: "Upper Floor", svg: floorPlanUpper("Upper Floor") },
+   945→    ],
+   946→    specifications: [
+   947→      { label: "Bedrooms", value: "5" },
+   948→      { label: "Bathrooms", value: "6" },
+   949→      { label: "Garage", value: "3 Cars" },
+   950→      { label: "Total Area", value: "510 sqm" },
+   951→      { label: "Kitchen", value: "Plus Pantry · 30 sqm" },
+   952→      { label: "Dining", value: "Formal · 26 sqm" },
+   953→      { label: "Study", value: "Library · 20 sqm" },
+   954→      { label: "Laundry", value: "Service · 14 sqm" },
+   955→    ],
+   956→    exterior: [
+   957→      img("1600585154340-be6161a56a0c", 1600),
+   958→      img("1613490493576-7fde63acd811", 1600),
+   959→      img("1600607687939-ce8a6c25118c", 1600),
+   960→      img("1600566753190-7f6cabf5274c", 1600),
+   961→    ],
+   962→    interiors: {
+   963→      kitchen: img("1600585154526-990dced4db0d", 1400),
+   964→      livingRoom: img("1480074568708-e7b720bb3f09", 1400),
+   965→      bedroom: img("1600210492486-724fe5c67fb0", 1400),
+   966→      bathroom: img("1600121848594-d8644e57abab", 1400),
+   967→      outdoor: img("1613490493576-7fde63acd811", 1400),
+   968→    },
+   969→    highlights: [
+   970→      "Three stepped concrete platforms",
+   971→      "Glass elevator between floors",
+   972→      "Spa, gym, wine cellar, cinema",
+   973→      "270° view from every level",
+   974→      "Buried lower floor for thermal mass",
+   975→    ],
+   976→  },
+   977→  {
+   978→    id: "12",
+   979→    slug: "olive-courtyard",
+   980→    name: "Olive Courtyard",
+   981→    tagline: "Mediterranean Family Villa",
+   982→    category: "villas",
+   983→    style: "Mediterranean Villa",
+   984→    bedrooms: 4,
+   985→    bathrooms: 4,
+   986→    stories: 1,
+   987→    garage: 2,
+   988→    area: 280,
+   989→    price: 225000,
+   990→    rating: 4.8,
+   991→    reviews: 26,
+   992→    featured: false,
+   993→    hero: img("1600607687939-ce8a6c25118c", 2400),
+   994→    thumbnail: img("1600607687939-ce8a6c25118c", 900),
+   995→    description:
+   996→      "A single-storey villa organised around an existing olive tree — the courtyard is the house, the rooms are its edges.",
+   997→    story: [
+   998→      "Olive Courtyard was designed around a 200-year-old olive tree on the site. The house forms a U around the tree, with every principal room opening onto a shaded loggia that faces the courtyard.",
+   999→      "The plan is single-storey for accessibility and thermal stability — thick lime-rendered walls keep the interior cool in summer, warm in winter. A separate studio above the garage provides a guest suite or home office.",
+  1000→    ],
+  1001→    gallery: [
+  1002→      { id: "g1", type: "image", src: img("1600607687939-ce8a6c25118c", 2000), span: "full", caption: "Loggia" },
+  1003→      { id: "g2", type: "image", src: img("1600585154340-be6161a56a0c", 1200), span: "tall", caption: "Courtyard" },
+  1004→      { id: "g3", type: "image", src: img("1480074568708-e7b720bb3f09", 1200), span: "small", caption: "Living" },
+  1005→      { id: "g4", type: "panoramic", src: img("1613490493576-7fde63acd811", 2400), span: "wide", caption: "Aerial" },
+  1006→      { id: "g5", type: "video", src: "LXb3EKWsInQ", poster: img("1600607687939-ce8a6c25118c", 1600), span: "wide", caption: "Walkthrough film" },
+  1007→      { id: "g6", type: "image", src: img("1600210492486-724fe5c67fb0", 1200), span: "small", caption: "Master" },
+  1008→    ],
+  1009→    videoTour: {
+  1010→      src: "LXb3EKWsInQ",
+  1011→      poster: img("1600607687939-ce8a6c25118c", 2000),
+  1012→      title: "Olive Courtyard — Walkthrough",
+  1013→    },
+  1014→    floorPlans: [{ label: "Ground Floor", svg: floorPlanSingle("Ground Floor") }],
+  1015→    specifications: [
+  1016→      { label: "Bedrooms", value: "4" },
+  1017→      { label: "Bathrooms", value: "4" },
+  1018→      { label: "Garage", value: "2 Cars + Studio" },
+  1019→      { label: "Total Area", value: "280 sqm" },
+  1020→      { label: "Kitchen", value: "Plus Pantry · 24 sqm" },
+  1021→      { label: "Dining", value: "Open · 18 sqm" },
+  1022→      { label: "Study", value: "Garage studio" },
+  1023→      { label: "Laundry", value: "Utility · 8 sqm" },
+  1024→    ],
+  1025→    exterior: [
+  1026→      img("1600607687939-ce8a6c25118c", 1600),
+  1027→      img("1600585154340-be6161a56a0c", 1600),
+  1028→      img("1613490493576-7fde63acd811", 1600),
+  1029→      img("1600566753190-7f6cabf5274c", 1600),
+  1030→    ],
+  1031→    interiors: {
+  1032→      kitchen: img("1600585154526-990dced4db0d", 1400),
+  1033→      livingRoom: img("1480074568708-e7b720bb3f09", 1400),
+  1034→      bedroom: img("1600210492486-724fe5c67fb0", 1400),
+  1035→      bathroom: img("1600121848594-d8644e57abab", 1400),
+  1036→      outdoor: img("1600585154340-be6161a56a0c", 1400),
+  1037→    },
+  1038→    highlights: [
+  1039→      "Designed around 200-year olive",
+  1040→      "U-plan with central courtyard",
+  1041→      "Lime-render thermal walls",
+  1042→      "Guest studio above garage",
+  1043→      "Single-storey accessibility",
+  1044→    ],
+  1045→  },
+  1046→];
+  1047→
+  1048→export const getFeaturedHouses = () => HOUSES.filter((h) => h.featured);
+  1049→export const getHouseBySlug = (slug?: string) =>
+  1050→  HOUSES.find((h) => h.slug === slug);
+  1051→export const getHousesByCategory = (cat: string) =>
+  1052→  HOUSES.filter((h) => h.category === cat);
+  1053→export const getSimilarHouses = (house: House, count = 4) =>
+  1054→  HOUSES.filter(
+  1055→    (h) => h.id !== house.id && (h.category === house.category || h.style === house.style)
+  1056→  ).slice(0, count);
+  1057→
