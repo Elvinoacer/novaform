@@ -19,7 +19,7 @@ import {
 import { CATEGORIES, HOUSES } from "@/lib/data";
 import { HouseCard } from "@/components/site/HouseCard";
 import { useSearchParams } from "next/navigation";
-import type { CategorySlug } from "@/lib/types";
+import type { CategorySlug, House } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const STYLES = Array.from(new Set(HOUSES.map((h) => h.style)));
@@ -53,10 +53,25 @@ export function BrowseView() {
   const [showFilters, setShowFilters] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
+  // DB-backed catalog (falls back to static HOUSES if the API is unavailable)
+  const [houses, setHouses] = useState<House[]>(HOUSES);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/designs")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!cancelled && j?.designs?.length) setHouses(j.designs);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const bucket = PRICE_BUCKETS[priceBucket];
-    return HOUSES.filter((h) => {
+    return houses.filter((h) => {
       if (category !== "all" && h.category !== category) return false;
       if (style !== "all" && h.style !== style) return false;
       if (bedrooms > 0 && h.bedrooms < bedrooms) return false;
@@ -70,7 +85,7 @@ export function BrowseView() {
       }
       return true;
     });
-  }, [category, style, bedrooms, bathrooms, stories, areaMax, priceBucket, query]);
+  }, [category, style, bedrooms, bathrooms, stories, areaMax, priceBucket, query, houses]);
 
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;

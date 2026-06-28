@@ -1,32 +1,160 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+//
+// Database note:
+// The production deployment targets PostgreSQL. In the local sandbox we use
+// SQLite (the only client available) so the schema intentionally avoids
+// PostgreSQL-only types (e.g. Json, @db.Text). When you deploy to PostgreSQL,
+// only the datasource provider + URL need to change — every model below is
+// already valid for both engines.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
+  // Switch to "postgresql" in production by setting DATABASE_URL accordingly.
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// ============ AUTH ============
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  role         String   @default("admin") // "admin" | "editor"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
-model Post {
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============ CATALOG (dynamic, admin-managed) ============
+model Design {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  tagline     String
+  category    String   // CategorySlug
+  style       String
+  bedrooms    Int
+  bathrooms   Int
+  stories     Int
+  garage      Int
+  area        Int
+  price       Int
+  rating      Float    @default(0)
+  reviews     Int      @default(0)
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  hero        String
+  thumbnail   String
+  description String
+  // story + highlights stored as JSON-encoded strings for SQLite compat.
+  // Use JSON.parse / JSON.stringify in code.
+  story      String   @default("[]")
+  highlights String   @default("[]")
+  // videoTour stored as JSON-encoded string
+  videoTour  String   @default("{}")
+  // specifications stored as JSON-encoded array of {label,value}
+  specifications String @default("[]")
+  // floorPlans stored as JSON-encoded array of {label,svg}
+  floorPlans String @default("[]")
+  // exterior images: JSON-encoded array of URLs
+  exterior   String   @default("[]")
+  // interiors: JSON-encoded object {kitchen, livingRoom, bedroom, bathroom, outdoor}
+  interiors  String   @default("{}")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  images     DesignImage[]
+
+  @@index([category])
+  @@index([featured])
+  @@index([published])
+}
+
+model DesignImage {
   id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
+  designId  String
+  design    Design   @relation(fields: [designId], references: [id], onDelete: Cascade)
+  url       String
+  caption   String?
+  type      String   @default("image") // "image" | "video" | "panoramic"
+  span      String?  // "full" | "wide" | "tall" | "square" | "small"
+  sortOrder Int      @default(0)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  @@index([designId])
+}
+
+// ============ MARQUEE ============
+model MarqueeItem {
+  id        String   @id @default(cuid())
+  text      String
+  href      String?
+  icon      String?  // optional lucide icon name
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// ============ CONTACT ============
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  designSlug String? // if message is about a specific design
+  read      Boolean  @default(false)
+  replied   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ============ GENERIC SITE ASSET (R2 reference) ============
+model SiteAsset {
+  id        String   @id @default(cuid())
+  key       String   @unique // R2 object key
+  url       String   // public URL (R2 public bucket URL or CDN)
+  filename  String
+  mimeType  String
+  size      Int
+  category  String   @default("design") // "design" | "marquee" | "hero" | "misc"
+  createdAt DateTime @default(now())
+
+  @@index([category])
 }

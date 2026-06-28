@@ -98,9 +98,17 @@ export function Footer() {
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[12px] text-white/50">
           <p>© {new Date().getFullYear()} Maison Studio. All rights reserved.</p>
-          <p className="tracking-wide-luxe uppercase text-[10px]">
-            Designed in studio · Built for the field
-          </p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate({ view: "admin-login" })}
+              className="tracking-wide-luxe uppercase text-[10px] hover:text-white transition-colors"
+            >
+              Admin
+            </button>
+            <p className="tracking-wide-luxe uppercase text-[10px]">
+              Designed in studio · Built for the field
+            </p>
+          </div>
         </div>
       </div>
     </footer>

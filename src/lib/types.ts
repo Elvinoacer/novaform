@@ -81,7 +81,14 @@ export interface House {
 }
 
 export interface View {
-  view: "landing" | "browse" | "house" | "about" | "contact";
+  view:
+    | "landing"
+    | "browse"
+    | "house"
+    | "about"
+    | "contact"
+    | "admin"
+    | "admin-login";
   houseSlug?: string;
   category?: CategorySlug;
 }

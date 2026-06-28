@@ -2,19 +2,70 @@
 
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUpRight, Play } from "lucide-react";
 import { useView } from "@/lib/useView";
-import { CATEGORIES, HOUSES, getFeaturedHouses } from "@/lib/data";
+import { CATEGORIES, HOUSES as STATIC_HOUSES, getFeaturedHouses as staticFeatured } from "@/lib/data";
 import { HouseCard } from "@/components/site/HouseCard";
-import { Lightbox, VideoPoster } from "@/components/site/Lightbox";
-import { useState } from "react";
-import * as Icons from "lucide-react";
-import type { GalleryItem } from "@/lib/types";
+import { Lightbox } from "@/components/site/Lightbox";
+import { RevealText } from "@/components/site/RevealText";
+import { Marquee } from "@/components/site/Marquee";
+import type { GalleryItem, House } from "@/lib/types";
 
 export function LandingView() {
   const { navigate } = useView();
-  const featured = getFeaturedHouses();
+
+  // ------- Data: pull from /api/* with static fallback -------
+  const [featured, setFeatured] = useState<House[]>(() => staticFeatured());
+  const [houses, setHouses] = useState<House[]>(STATIC_HOUSES);
+  const [marqueeItems, setMarqueeItems] = useState<
+    { id: string; text: string; href?: string | null; icon?: string | null }[]
+  >([
+    { id: "s1", text: "Construction-ready plans" },
+    { id: "s2", text: "Architect-led designs" },
+    { id: "s3", text: "Site-adaptable" },
+    { id: "s4", text: "Foundation to finish" },
+    { id: "s5", text: "100+ premium designs" },
+    { id: "s6", text: "Modern · Luxury · Villa" },
+  ]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch("/api/designs?featured=1");
+        if (r.ok) {
+          const j = await r.json();
+          if (!cancelled && Array.isArray(j.designs) && j.designs.length) {
+            setFeatured(j.designs.slice(0, 6));
+          }
+        }
+      } catch {}
+      try {
+        const r = await fetch("/api/designs");
+        if (r.ok) {
+          const j = await r.json();
+          if (!cancelled && Array.isArray(j.designs) && j.designs.length) {
+            setHouses(j.designs);
+          }
+        }
+      } catch {}
+      try {
+        const r = await fetch("/api/marquee");
+        if (r.ok) {
+          const j = await r.json();
+          if (!cancelled && Array.isArray(j.items) && j.items.length) {
+            setMarqueeItems(j.items);
+          }
+        }
+      } catch {}
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Hero parallax
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroProgress } = useScroll({
     target: heroRef,
@@ -25,18 +76,17 @@ export function LandingView() {
   const heroTextY = useTransform(heroProgress, [0, 1], ["0%", "40%"]);
   const heroTextOpacity = useTransform(heroProgress, [0, 0.7], [1, 0]);
 
-  // Inspiration gallery — flatten all galleries (excluding videos for masonry)
+  // Inspiration gallery — flatten all galleries (excluding videos)
   const inspirationItems: (GalleryItem & { houseName?: string })[] = [];
-  HOUSES.forEach((h) => {
+  houses.forEach((h) => {
     h.gallery.slice(0, 4).forEach((g) => {
       if (g.type !== "video") inspirationItems.push({ ...g, houseName: h.name });
     });
   });
   const inspiration = inspirationItems.slice(0, 14);
-
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  // Spread items into columns for masonry feel
+  // Even 4-column masonry spread for the inspiration gallery
   const columns: (typeof inspiration)[] = [[], [], [], []];
   inspiration.forEach((item, i) => {
     columns[i % 4].push(item);
@@ -54,8 +104,8 @@ export function LandingView() {
           className="absolute inset-0"
         >
           <Image
-            src={HOUSES[0].hero}
-            alt="The Aurora Residence"
+            src={houses[0]?.hero ?? STATIC_HOUSES[0].hero}
+            alt={houses[0]?.name ?? "Featured residence"}
             fill
             priority
             sizes="100vw"
@@ -77,20 +127,29 @@ export function LandingView() {
           >
             Maison Studio · Architectural House Plans
           </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="font-serif-display text-white text-[clamp(2.75rem,8vw,7rem)] leading-[0.95] tracking-[-0.025em] max-w-[14ch]"
-          >
-            Crafted for
-            <br />
-            modern living.
-          </motion.h1>
+
+          {/* Reveal-on-scroll hero headline (char mode for tighter feel) */}
+          <h1 className="font-serif-display text-white text-[clamp(2.75rem,8vw,7rem)] leading-[0.95] tracking-[-0.025em] max-w-[14ch]">
+            <RevealText
+              text="Crafted for"
+              mode="word"
+              as="span"
+              delay={0.35}
+              className="block"
+            />
+            <RevealText
+              text="modern living."
+              mode="word"
+              as="span"
+              delay={0.55}
+              className="block"
+            />
+          </h1>
+
           <motion.p
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, delay: 0.85, ease: [0.16, 1, 0.3, 1] }}
             className="mt-7 text-base sm:text-lg text-white/75 max-w-[52ch] leading-relaxed"
           >
             Discover beautiful architectural designs that inspire your next
@@ -100,7 +159,7 @@ export function LandingView() {
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, delay: 1, ease: [0.16, 1, 0.3, 1] }}
             className="mt-10 flex flex-col sm:flex-row items-center gap-3"
           >
             <button
@@ -111,7 +170,7 @@ export function LandingView() {
               <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.5} />
             </button>
             <button
-              onClick={() => navigate({ view: "house", houseSlug: "aurora-residence" })}
+              onClick={() => navigate({ view: "house", houseSlug: houses[0]?.slug ?? "aurora-residence" })}
               className="group inline-flex items-center gap-3 text-white border border-white/25 px-8 py-4 rounded-full text-[12px] tracking-wide-luxe uppercase hover:bg-white/10 hover:border-white/40 transition-all"
             >
               <Play className="size-3.5 fill-white" strokeWidth={0} />
@@ -134,7 +193,15 @@ export function LandingView() {
         </motion.div>
       </section>
 
-      {/* ============ FEATURED COLLECTION ============ */}
+      {/* ============ TOP MARQUEE ============ */}
+      <Marquee
+        items={marqueeItems}
+        variant="bold"
+        direction="left"
+        duration={36}
+      />
+
+      {/* ============ FEATURED COLLECTION (even 3-col grid) ============ */}
       <section className="py-24 lg:py-36 px-6 lg:px-10 max-w-[1400px] mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16 lg:mb-20">
           <motion.div
@@ -148,9 +215,8 @@ export function LandingView() {
               The Featured Collection
             </p>
             <h2 className="font-serif-display text-[clamp(2.25rem,5vw,4rem)] leading-[1.02] tracking-tight">
-              Six designs,
-              <br />
-              chosen this season.
+              <RevealText text="Six designs," as="span" mode="word" className="block" />
+              <RevealText text="chosen this season." as="span" mode="word" delay={0.15} className="block" />
             </h2>
           </motion.div>
           <motion.button
@@ -166,8 +232,9 @@ export function LandingView() {
           </motion.button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
-          {featured.map((house, i) => (
+        {/* Even 3-column grid with consistent row gap so cards line up row-by-row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-14 items-start">
+          {featured.slice(0, 6).map((house, i) => (
             <HouseCard
               key={house.id}
               house={house}
@@ -179,7 +246,7 @@ export function LandingView() {
         </div>
       </section>
 
-      {/* ============ INSPIRATION GALLERY (Masonry) ============ */}
+      {/* ============ INSPIRATION GALLERY (even masonry, 4 columns) ============ */}
       <section className="py-24 lg:py-32 bg-cream">
         <div className="max-w-[1600px] mx-auto px-6 lg:px-10">
           <div className="text-center max-w-2xl mx-auto mb-16 lg:mb-20">
@@ -192,17 +259,10 @@ export function LandingView() {
             >
               Inspiration Gallery
             </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="font-serif-display text-[clamp(2rem,4.5vw,3.5rem)] leading-tight tracking-tight"
-            >
-              Walk through the rooms
-              <br />
-              before they exist.
-            </motion.h2>
+            <h2 className="font-serif-display text-[clamp(2rem,4.5vw,3.5rem)] leading-tight tracking-tight">
+              <RevealText text="Walk through the rooms" as="span" mode="word" className="block" />
+              <RevealText text="before they exist." as="span" mode="word" delay={0.12} className="block" />
+            </h2>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
@@ -272,6 +332,14 @@ export function LandingView() {
         </div>
       </section>
 
+      {/* ============ MID MARQUEE (reverse direction, soft) ============ */}
+      <Marquee
+        items={marqueeItems.map((m) => ({ ...m, text: m.text }))}
+        variant="soft"
+        direction="right"
+        duration={42}
+      />
+
       {/* ============ CATEGORIES ============ */}
       <section className="py-24 lg:py-36 px-6 lg:px-10 max-w-[1400px] mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-16 lg:mb-20">
@@ -284,22 +352,14 @@ export function LandingView() {
           >
             Browse by Category
           </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-            className="font-serif-display text-[clamp(2rem,4.5vw,3.5rem)] leading-tight tracking-tight"
-          >
-            Find the typology
-            <br />
-            that fits your plot.
-          </motion.h2>
+          <h2 className="font-serif-display text-[clamp(2rem,4.5vw,3.5rem)] leading-tight tracking-tight">
+            <RevealText text="Find the typology" as="span" mode="word" className="block" />
+            <RevealText text="that fits your plot." as="span" mode="word" delay={0.12} className="block" />
+          </h2>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:gap-4">
           {CATEGORIES.map((c, i) => {
-            const Icon = (Icons as any)[c.icon] ?? Icons.Square;
             return (
               <motion.button
                 key={c.slug}
@@ -324,7 +384,7 @@ export function LandingView() {
                 <div className="absolute inset-0 bg-gradient-to-t from-charcoal/85 via-charcoal/20 to-transparent" />
                 <div className="absolute top-5 left-5">
                   <div className="size-11 rounded-full border border-white/30 backdrop-blur-md flex items-center justify-center">
-                    <Icon className="size-5 text-white" strokeWidth={1.25} />
+                    <CategoryIcon name={c.icon} />
                   </div>
                 </div>
                 <div className="absolute bottom-0 inset-x-0 p-5 lg:p-7 text-white">
@@ -362,9 +422,8 @@ export function LandingView() {
               Why Our Designs
             </p>
             <h2 className="font-serif-display text-[clamp(2rem,4.5vw,3.75rem)] leading-[1.05] tracking-tight">
-              Every plan is
-              <br />
-              construction-ready.
+              <RevealText text="Every plan is" as="span" mode="word" className="block" />
+              <RevealText text="construction-ready." as="span" mode="word" delay={0.12} className="block" />
             </h2>
             <p className="mt-6 text-white/70 leading-relaxed max-w-md">
               We don&apos;t sell concepts. Every house in our catalog has been
@@ -380,6 +439,7 @@ export function LandingView() {
             </button>
           </motion.div>
 
+          {/* Even 2x3 grid for the six pillars */}
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10 rounded-sm overflow-hidden">
             {[
               { title: "Professionally Designed", desc: "By licensed architects with 15+ years of residential practice." },
@@ -429,10 +489,13 @@ export function LandingView() {
             Ready to Build?
           </p>
           <h2 className="font-serif-display text-[clamp(2.5rem,7vw,6rem)] leading-[0.98] tracking-tight">
-            Explore over 100
-            <br />
-            <span className="text-gold-gradient italic font-display font-medium">premium</span>{" "}
-            house plans.
+            <RevealText text="Explore over 100" as="span" mode="word" className="block" />
+            <span className="block">
+              <span className="text-gold-gradient italic font-display font-medium">
+                <RevealText text="premium" as="span" mode="word" delay={0.15} />
+              </span>{" "}
+              <RevealText text="house plans." as="span" mode="word" delay={0.25} />
+            </span>
           </h2>
           <p className="mt-8 text-foreground/70 text-lg max-w-xl mx-auto leading-relaxed">
             Pick a design. Request the brochure. Take it to your builder. We
@@ -464,4 +527,20 @@ export function LandingView() {
       />
     </div>
   );
+}
+
+// --- helpers ---
+
+/** Lazy icon resolver so we don't import every lucide icon eagerly. */
+function CategoryIcon({ name }: { name: string }) {
+  const [Icon, setIcon] = useState<any>(null);
+  useEffect(() => {
+    import("lucide-react").then((mod) => {
+      setIcon(() => (mod as any)[name] ?? (mod as any).Square);
+    });
+  }, [name]);
+  if (!Icon) {
+    return <span className="size-5 rounded-full bg-white/40" />;
+  }
+  return <Icon className="size-5 text-white" strokeWidth={1.25} />;
 }

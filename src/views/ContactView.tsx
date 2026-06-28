@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 export function ContactView() {
   const { navigate, view } = useView();
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -21,9 +23,35 @@ export function ContactView() {
   const setField = (k: keyof typeof form, v: string) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setError(null);
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone || undefined,
+          subject: form.interest
+            ? `Enquiry about ${form.interest}`
+            : "General enquiry",
+          message: form.message,
+          designSlug: form.interest || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error || "Something went wrong. Please try again.");
+      }
+      setSubmitted(true);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -151,16 +179,22 @@ export function ContactView() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between gap-4 pt-2">
+                <div className="flex flex-col items-stretch sm:flex-row sm:items-center justify-between gap-4 pt-2">
                   <p className="text-[11px] tracking-wide-luxe uppercase text-muted-foreground max-w-xs">
                     We respond within one working day.
                   </p>
+                  {error && (
+                    <p className="text-[12px] text-destructive">{error}</p>
+                  )}
                   <button
                     type="submit"
-                    className="group inline-flex items-center gap-3 bg-charcoal text-white px-8 py-4 rounded-full text-[12px] tracking-wide-luxe uppercase hover:bg-charcoal/90 transition-all hover:gap-4"
+                    disabled={submitting}
+                    className="group inline-flex items-center justify-center gap-3 bg-charcoal text-white px-8 py-4 rounded-full text-[12px] tracking-wide-luxe uppercase hover:bg-charcoal/90 transition-all hover:gap-4 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    Send Request
-                    <Send className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.5} />
+                    {submitting ? "Sending…" : "Send Request"}
+                    {!submitting && (
+                      <Send className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.5} />
+                    )}
                   </button>
                 </div>
               </motion.form>

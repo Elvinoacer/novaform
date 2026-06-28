@@ -29,11 +29,13 @@ import {
   getHouseBySlug,
   getSimilarHouses,
   CATEGORIES,
+  HOUSES,
 } from "@/lib/data";
 import { useView } from "@/lib/useView";
 import { HouseCard } from "@/components/site/HouseCard";
 import { Lightbox } from "@/components/site/Lightbox";
 import { cn } from "@/lib/utils";
+import type { House } from "@/lib/types";
 
 interface HouseViewProps {
   slug: string;
@@ -48,7 +50,21 @@ const formatPrice = (n: number) =>
 
 export function HouseView({ slug }: HouseViewProps) {
   const { navigate } = useView();
-  const house = getHouseBySlug(slug);
+  // Try API first, fall back to static data so offline / pre-seed still works
+  const [house, setHouse] = useState<House | null>(() => getHouseBySlug(slug));
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/designs?slug=${encodeURIComponent(slug)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!cancelled && j?.design) setHouse(j.design);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroProgress } = useScroll({
