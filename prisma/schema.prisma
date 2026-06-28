@@ -1,21 +1,19 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 //
-// Database note:
-// The production deployment targets PostgreSQL. In the local sandbox we use
-// SQLite (the only client available) so the schema intentionally avoids
-// PostgreSQL-only types (e.g. Json, @db.Text). When you deploy to PostgreSQL,
-// only the datasource provider + URL need to change — every model below is
-// already valid for both engines.
+// Prisma v7 format:
+// - datasource block has NO url field (moved to prisma.config.ts)
+// - generator uses provider = "prisma-client" (not prisma-client-js)
+// - output is REQUIRED in v7
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  // Switch to "postgresql" in production by setting DATABASE_URL accordingly.
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  // url is configured in prisma.config.ts (Prisma v7 requirement)
+  provider = "postgresql"
 }
 
 // ============ AUTH ============
@@ -82,20 +80,14 @@ model Design {
   hero        String
   thumbnail   String
   description String
-  // story + highlights stored as JSON-encoded strings for SQLite compat.
-  // Use JSON.parse / JSON.stringify in code.
-  story      String   @default("[]")
-  highlights String   @default("[]")
-  // videoTour stored as JSON-encoded string
-  videoTour  String   @default("{}")
-  // specifications stored as JSON-encoded array of {label,value}
+  // JSON fields stored as Text in PostgreSQL
+  story          String @default("[]")
+  highlights     String @default("[]")
+  videoTour      String @default("{}")
   specifications String @default("[]")
-  // floorPlans stored as JSON-encoded array of {label,svg}
-  floorPlans String @default("[]")
-  // exterior images: JSON-encoded array of URLs
-  exterior   String   @default("[]")
-  // interiors: JSON-encoded object {kitchen, livingRoom, bedroom, bathroom, outdoor}
-  interiors  String   @default("{}")
+  floorPlans     String @default("[]")
+  exterior       String @default("[]")
+  interiors      String @default("{}")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -133,16 +125,16 @@ model MarqueeItem {
 
 // ============ CONTACT ============
 model ContactMessage {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  phone     String?
-  subject   String
-  message   String
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  subject    String
+  message    String
   designSlug String? // if message is about a specific design
-  read      Boolean  @default(false)
-  replied   Boolean  @default(false)
-  createdAt DateTime @default(now())
+  read       Boolean  @default(false)
+  replied    Boolean  @default(false)
+  createdAt  DateTime @default(now())
 }
 
 // ============ GENERIC SITE ASSET (R2 reference) ============

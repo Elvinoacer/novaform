@@ -13,9 +13,10 @@ export function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           {/* Brand */}
           <div className="lg:col-span-5">
-            <p className="text-[11px] tracking-luxe uppercase text-white/50 mb-4">
-              Maison Studio
-            </p>
+            <div className="relative inline-block mb-8 mt-2">
+              <div className="absolute inset-0 bg-white/10 blur-[32px] rounded-full scale-[2]"></div>
+              <img src="/novaform_logo.webp" alt="Novaform Logo" className="relative h-28 scale-[1.2] origin-left object-contain drop-shadow-md" />
+            </div>
             <h3 className="font-serif-display text-4xl lg:text-5xl text-white leading-[1.05] tracking-tight">
               Crafted architectural
               <br />
@@ -97,7 +98,7 @@ export function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[12px] text-white/50">
-          <p>© {new Date().getFullYear()} Maison Studio. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Novaform. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate({ view: "admin-login" })}

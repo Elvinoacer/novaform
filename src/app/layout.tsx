@@ -25,7 +25,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "MAISON — Crafted Architectural House Plans",
+  title: "Novaform — Crafted Architectural House Plans",
   description:
     "Discover premium, construction-ready architectural designs. A curated catalog of modern villas, luxury homes, bungalows, maisonettes & small homes — designed for modern living.",
   keywords: [
@@ -37,12 +37,20 @@ export const metadata: Metadata = {
     "bungalows",
     "premium house designs",
   ],
-  authors: [{ name: "Maison Studio" }],
+  authors: [{ name: "Novaform" }],
   openGraph: {
-    title: "MAISON — Crafted Architectural House Plans",
+    title: "Novaform — Crafted Architectural House Plans",
     description:
       "A curated catalog of premium house designs. Walk through designs before you read the specifications.",
     type: "website",
+    images: [
+      {
+        url: "/novaform_preview.webp",
+        width: 1200,
+        height: 630,
+        alt: "Novaform Architectural House Plans",
+      },
+    ],
   },
 };
 

@@ -54,11 +54,9 @@ export function Navigation() {
               "flex items-center gap-3 transition-colors",
               onDark ? "text-white" : "text-foreground"
             )}
-            aria-label="Maison — Home"
+            aria-label="Novaform — Home"
           >
-            <span className="font-serif-display text-2xl tracking-tight">
-              MAISON
-            </span>
+            <img src="/novaform_logo.webp" alt="Novaform Logo" className="h-10 scale-[1.35] origin-left object-contain drop-shadow-sm" />
             <span
               className={cn(
                 "hidden sm:inline-block text-[10px] tracking-luxe uppercase opacity-70 border-l pl-3",
@@ -179,7 +177,7 @@ export function Navigation() {
             className="fixed inset-0 z-[60] bg-background lg:hidden"
           >
             <div className="flex items-center justify-between px-6 py-5 border-b border-border">
-              <span className="font-serif-display text-2xl">MAISON</span>
+              <img src="/novaform_logo.webp" alt="Novaform Logo" className="h-8 scale-[1.35] origin-left object-contain drop-shadow-sm" />
               <button
                 onClick={() => setMobileOpen(false)}
                 className="p-2.5 rounded-full hover:bg-foreground/5"

@@ -198,7 +198,7 @@ export function AboutView() {
             three years after they moved in — that the house still works.
           </motion.p>
           <p className="mt-8 text-[11px] tracking-luxe uppercase text-white/50">
-            Maison Studio · Principal Architect
+            Novaform · Principal Architect
           </p>
         </div>
       </section>

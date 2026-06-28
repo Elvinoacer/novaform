@@ -63,13 +63,13 @@ export async function uploadToR2(opts: {
 
   const { buffer, filename, mimeType, category = "design" } = opts;
 
-  // Generate a stable, unique key: <category>/<yyyy-mm>/<uuid>__<filename>
+  // Generate a stable, unique key: NovaForm/<category>/<yyyy-mm>/<uuid>__<filename>
   const now = new Date();
   const yyyy = now.getUTCFullYear();
   const mm = String(now.getUTCMonth() + 1).padStart(2, "0");
   const unique = crypto.randomUUID().split("-")[0];
   const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const key = `${category}/${yyyy}-${mm}/${unique}-${safeName}`;
+  const key = `NovaForm/${category}/${yyyy}-${mm}/${unique}-${safeName}`;
 
   await r2.send(
     new PutObjectCommand({

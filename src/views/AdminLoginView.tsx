@@ -9,7 +9,7 @@ import { useView } from "@/lib/useView";
 export function AdminLoginView() {
   const { navigate } = useView();
   const router = useRouter();
-  const [email, setEmail] = useState("admin@maison.studio");
+  const [email, setEmail] = useState("admin@dajarch.studio");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export function AdminLoginView() {
         <div className="bg-background border border-border rounded-md p-8 lg:p-10 shadow-luxe">
           <div className="mb-8">
             <p className="text-[11px] tracking-luxe uppercase text-gold mb-3">
-              Maison Studio
+              Novaform
             </p>
             <h1 className="font-serif-display text-3xl lg:text-4xl leading-tight">
               Admin sign in.
@@ -123,10 +123,10 @@ export function AdminLoginView() {
 
           <div className="mt-8 pt-6 border-t border-border/60 text-[12px] text-muted-foreground">
             <p className="mb-1">
-              <strong>Demo credentials</strong> (run <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">bun run scripts/seed.ts</code> first):
+              <strong>Demo credentials</strong> (run <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">npm run db:seed</code> first):
             </p>
-            <p>Email: <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">admin@maison.studio</code></p>
-            <p>Password: <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">maison-admin-2025</code></p>
+            <p>Email: <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">admin@dajarch.studio</code></p>
+            <p>Password: <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">dajarch-admin-2025</code></p>
           </div>
         </div>
       </motion.div>

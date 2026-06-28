@@ -39,7 +39,7 @@ export async function sendMail(args: SendMailArgs) {
     );
     return { id: "noop", noop: true };
   }
-  const from = process.env.FROM_EMAIL ?? "Maison Studio <onboarding@resend.dev>";
+  const from = process.env.FROM_EMAIL ?? "Novaform <onboarding@resend.dev>";
   const { data, error } = await c.emails.send({
     from,
     to: args.to,

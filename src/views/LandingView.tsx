@@ -125,7 +125,7 @@ export function LandingView() {
             transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="text-[11px] sm:text-[12px] tracking-luxe uppercase text-white/70 mb-7"
           >
-            Maison Studio · Architectural House Plans
+            Novaform · Architectural House Plans
           </motion.p>
 
           {/* Reveal-on-scroll hero headline (char mode for tighter feel) */}

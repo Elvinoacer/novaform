@@ -47,7 +47,7 @@ export function StickyChatIcon({
   const finalMessage =
     message ??
     process.env.NEXT_PUBLIC_WHATSAPP_DEFAULT_MESSAGE ??
-    "Hello Maison Studio, I'd like to know more about your house plans.";
+    "Hello Novaform, I'd like to know more about your house plans.";
 
   // Periodically resurface the tooltip until the user dismisses it.
   useEffect(() => {

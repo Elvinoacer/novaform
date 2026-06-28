@@ -17,6 +17,11 @@ import {
   Check,
   ExternalLink,
   ArrowLeft,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  SlidersHorizontal,
+  Clock,
 } from "lucide-react";
 import { useView } from "@/lib/useView";
 import { cn } from "@/lib/utils";
@@ -112,7 +117,7 @@ export function AdminDashboardView() {
             <LayoutDashboard className="size-5 text-gold" strokeWidth={1.5} />
             <div>
               <p className="text-[10px] tracking-luxe uppercase text-muted-foreground">
-                Maison Studio
+                Novaform
               </p>
               <p className="font-serif-display text-lg leading-tight">
                 Admin Dashboard
@@ -181,16 +186,49 @@ function DesignsTab() {
   const [editing, setEditing] = useState<DesignRow | null>(null);
   const [creating, setCreating] = useState(false);
 
+  // New state for filtering, sorting, pagination
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const [sort, setSort] = useState("latest");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1); // Reset to page 1 on new search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Reset to page 1 when category or sort changes
+  useEffect(() => {
+    setPage(1);
+  }, [category, sort]);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const r = await fetch("/api/admin/designs");
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: "12",
+        sort: sort,
+      });
+      if (debouncedSearch) params.append("search", debouncedSearch);
+      if (category !== "all") params.append("category", category);
+
+      const r = await fetch(`/api/admin/designs?${params}`);
       const j = await r.json();
       setDesigns(j.designs ?? []);
+      setTotalPages(j.totalPages ?? 1);
+      setTotalItems(j.total ?? 0);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, debouncedSearch, category, sort]);
 
   useEffect(() => {
     load();
@@ -202,7 +240,7 @@ function DesignsTab() {
         <div>
           <h2 className="font-serif-display text-3xl">Designs</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {designs.length} design{designs.length === 1 ? "" : "s"} in the catalog.
+            {totalItems} design{totalItems === 1 ? "" : "s"} found.
           </p>
         </div>
         <button
@@ -214,66 +252,143 @@ function DesignsTab() {
         </button>
       </div>
 
-      {loading ? (
+      {/* Filters Bar */}
+      <div className="bg-background border border-border rounded-md p-3 mb-6 flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" strokeWidth={1.5} />
+          <input
+            type="text"
+            placeholder="Search by name or slug..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-cream border border-border rounded-full pl-9 pr-4 py-2 text-sm outline-none focus:border-foreground/50 transition-colors"
+          />
+        </div>
+        <div className="flex w-full sm:w-auto items-center gap-3">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <SlidersHorizontal className="hidden sm:block size-4 text-muted-foreground" strokeWidth={1.5} />
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full sm:w-auto bg-cream border border-border rounded-full px-4 py-2 text-sm outline-none focus:border-foreground/50 transition-colors cursor-pointer appearance-none text-center sm:text-left"
+            >
+              <option value="all">All Categories</option>
+              <option value="modern">Modern</option>
+              <option value="luxury">Luxury</option>
+              <option value="bungalows">Bungalows</option>
+              <option value="maisonettes">Maisonettes</option>
+              <option value="villas">Villas</option>
+              <option value="small-homes">Small Homes</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Clock className="hidden sm:block size-4 text-muted-foreground" strokeWidth={1.5} />
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="w-full sm:w-auto bg-cream border border-border rounded-full px-4 py-2 text-sm outline-none focus:border-foreground/50 transition-colors cursor-pointer appearance-none text-center sm:text-left"
+            >
+              <option value="latest">Latest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="az">Name (A-Z)</option>
+              <option value="za">Name (Z-A)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {loading && designs.length === 0 ? (
         <div className="py-20 flex justify-center">
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {designs.map((d) => (
-            <motion.div
-              key={d.id}
-              layout
-              className="bg-background rounded-md border border-border overflow-hidden flex flex-col"
-            >
-              <div className="relative aspect-[16/10] bg-muted">
-                { }
-                <img src={d.hero} alt={d.name} className="w-full h-full object-cover" />
-                <div className="absolute top-2 left-2 flex gap-1">
-                  {d.featured && (
-                    <span className="bg-gold/90 text-charcoal text-[9px] tracking-wide-luxe uppercase px-2 py-0.5 rounded-full">
-                      Featured
-                    </span>
-                  )}
-                  {!d.published && (
-                    <span className="bg-destructive/90 text-white text-[9px] tracking-wide-luxe uppercase px-2 py-0.5 rounded-full">
-                      Hidden
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="p-4 flex-1 flex flex-col">
-                <p className="text-[10px] tracking-wide-luxe uppercase text-muted-foreground">
-                  {d.category}
-                </p>
-                <h3 className="font-serif-display text-lg mt-1">{d.name}</h3>
-                <p className="text-[11px] text-muted-foreground mt-1">
-                  /{d.slug}
-                </p>
-                <div className="mt-4 flex items-center gap-2">
-                  <button
-                    onClick={() => setEditing(d)}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 text-[11px] tracking-wide-luxe uppercase border border-border hover:bg-foreground/5 transition-colors py-2 rounded-full"
-                  >
-                    <Pencil className="size-3" strokeWidth={1.5} />
-                    Edit
-                  </button>
-                  <button
-                    onClick={async () => {
-                      if (!confirm(`Delete "${d.name}"? This cannot be undone.`)) return;
-                      await fetch(`/api/admin/designs/${d.slug}`, { method: "DELETE" });
-                      load();
-                    }}
-                    className="size-9 inline-flex items-center justify-center border border-border text-destructive hover:bg-destructive/10 transition-colors rounded-full"
-                    aria-label="Delete design"
-                  >
-                    <Trash2 className="size-3.5" strokeWidth={1.5} />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+      ) : designs.length === 0 ? (
+        <div className="py-20 flex flex-col items-center justify-center border border-border rounded-md border-dashed bg-background/50">
+          <Search className="size-8 text-muted-foreground mb-3" strokeWidth={1} />
+          <p className="text-foreground font-medium">No designs found.</p>
+          <p className="text-sm text-muted-foreground mt-1">Try adjusting your search or filters.</p>
         </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {designs.map((d) => (
+              <motion.div
+                key={d.id}
+                layout
+                className="bg-background rounded-md border border-border overflow-hidden flex flex-col"
+              >
+                <div className="relative aspect-[16/10] bg-muted">
+                  <img src={d.hero} alt={d.name} className="w-full h-full object-cover" />
+                  <div className="absolute top-2 left-2 flex gap-1">
+                    {d.featured && (
+                      <span className="bg-gold/90 text-charcoal text-[9px] tracking-wide-luxe uppercase px-2 py-0.5 rounded-full">
+                        Featured
+                      </span>
+                    )}
+                    {!d.published && (
+                      <span className="bg-destructive/90 text-white text-[9px] tracking-wide-luxe uppercase px-2 py-0.5 rounded-full">
+                        Hidden
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="p-4 flex-1 flex flex-col">
+                  <p className="text-[10px] tracking-wide-luxe uppercase text-muted-foreground">
+                    {d.category}
+                  </p>
+                  <h3 className="font-serif-display text-lg mt-1">{d.name}</h3>
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    /{d.slug}
+                  </p>
+                  <div className="mt-4 flex items-center gap-2">
+                    <button
+                      onClick={() => setEditing(d)}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 text-[11px] tracking-wide-luxe uppercase border border-border hover:bg-foreground/5 transition-colors py-2 rounded-full"
+                    >
+                      <Pencil className="size-3" strokeWidth={1.5} />
+                      Edit
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (!confirm(`Delete "${d.name}"? This cannot be undone.`)) return;
+                        await fetch(`/api/admin/designs/${d.slug}`, { method: "DELETE" });
+                        load();
+                      }}
+                      className="size-9 inline-flex items-center justify-center border border-border text-destructive hover:bg-destructive/10 transition-colors rounded-full"
+                      aria-label="Delete design"
+                    >
+                      <Trash2 className="size-3.5" strokeWidth={1.5} />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-8 flex items-center justify-center gap-4">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="size-9 inline-flex items-center justify-center border border-border rounded-full hover:bg-foreground/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="size-4" strokeWidth={1.5} />
+              </button>
+              <span className="text-sm font-medium">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="size-9 inline-flex items-center justify-center border border-border rounded-full hover:bg-foreground/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Next page"
+              >
+                <ChevronRight className="size-4" strokeWidth={1.5} />
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {(editing || creating) && (

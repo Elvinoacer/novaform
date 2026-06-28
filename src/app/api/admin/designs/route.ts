@@ -8,15 +8,49 @@ export const runtime = "nodejs";
  * GET /api/admin/designs            — list ALL designs (incl. unpublished)
  * POST /api/admin/designs           — create new design
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
   const user = await requireAdmin();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const rows = await db.design.findMany({
-    include: { images: true },
-    orderBy: [{ createdAt: "desc" }],
+  const { searchParams } = req.nextUrl;
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "12");
+  const search = searchParams.get("search") || "";
+  const category = searchParams.get("category") || "all";
+  const sort = searchParams.get("sort") || "latest";
+
+  const where: any = {};
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: "insensitive" } },
+      { slug: { contains: search, mode: "insensitive" } },
+    ];
+  }
+  if (category !== "all") {
+    where.category = category;
+  }
+
+  let orderBy: any = [{ createdAt: "desc" }];
+  if (sort === "oldest") orderBy = [{ createdAt: "asc" }];
+  if (sort === "az") orderBy = [{ name: "asc" }];
+  if (sort === "za") orderBy = [{ name: "desc" }];
+
+  const [rows, total] = await Promise.all([
+    db.design.findMany({
+      where,
+      include: { images: true },
+      orderBy,
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    db.design.count({ where }),
+  ]);
+
+  return NextResponse.json({ 
+    designs: rows, 
+    total, 
+    totalPages: Math.ceil(total / limit) || 1 
   });
-  return NextResponse.json({ designs: rows });
 }
 
 export async function POST(req: NextRequest) {

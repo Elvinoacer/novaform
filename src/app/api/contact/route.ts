@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     replyTo: body.email,
     html: `
       <div style="font-family: ui-sans-serif, system-ui; color: #181818; max-width: 560px; margin: 0 auto; padding: 24px;">
-        <h2 style="font-family: Georgia, serif; margin: 0 0 16px;">New enquiry — Maison Studio</h2>
+        <h2 style="font-family: Georgia, serif; margin: 0 0 16px;">New enquiry — Novaform</h2>
         <p style="margin: 0 0 12px;"><strong>From:</strong> ${escapeHtml(body.name)} &lt;${escapeHtml(body.email)}&gt;</p>
         ${body.phone ? `<p style="margin: 0 0 12px;"><strong>Phone:</strong> ${escapeHtml(body.phone)}</p>` : ""}
         ${body.designSlug ? `<p style="margin: 0 0 12px;"><strong>Design:</strong> ${escapeHtml(body.designSlug)}</p>` : ""}
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
   // 2. Auto-reply to enquirer (best-effort)
   await sendMail({
     to: body.email,
-    subject: "We received your message · Maison Studio",
+    subject: "We received your message · Novaform",
     html: `
       <div style="font-family: ui-sans-serif, system-ui; color: #181818; max-width: 560px; margin: 0 auto; padding: 24px;">
         <h2 style="font-family: Georgia, serif; margin: 0 0 16px;">Thank you, ${escapeHtml(body.name.split(" ")[0])}.</h2>
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
           <em>${escapeHtml(body.message.slice(0, 240))}${body.message.length > 240 ? "…" : ""}</em>
         </p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 16px 0;" />
-        <p style="font-size: 12px; color: #888;">Maison Studio · Architectural House Plans</p>
+        <p style="font-size: 12px; color: #888;">Novaform · Architectural House Plans</p>
       </div>
     `,
   }).catch((e) => console.error("[contact] auto-reply failed:", e));
