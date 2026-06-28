@@ -9,7 +9,9 @@ import { useView } from "@/lib/useView";
 export function AdminLoginView() {
   const { navigate } = useView();
   const router = useRouter();
-  const [email, setEmail] = useState("admin@dajarch.studio");
+  const [email, setEmail] = useState(
+    process.env.NODE_ENV === "development" ? "admin@dajarch.studio" : ""
+  );
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +85,7 @@ export function AdminLoginView() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full bg-background border border-border rounded-md pl-11 pr-4 py-3.5 text-sm outline-none focus:border-foreground/50 transition-colors"
-                  placeholder="admin@maison.studio"
+                  placeholder="admin@novaform.com"
                 />
               </div>
             </div>
@@ -121,13 +123,15 @@ export function AdminLoginView() {
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-border/60 text-[12px] text-muted-foreground">
-            <p className="mb-1">
-              <strong>Demo credentials</strong> (run <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">npm run db:seed</code> first):
-            </p>
-            <p>Email: <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">admin@dajarch.studio</code></p>
-            <p>Password: <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">dajarch-admin-2025</code></p>
-          </div>
+          {process.env.NODE_ENV === "development" && (
+            <div className="mt-8 pt-6 border-t border-border/60 text-[12px] text-muted-foreground">
+              <p className="mb-1">
+                <strong>Demo credentials</strong> (run <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">npm run db:seed</code> first):
+              </p>
+              <p>Email: <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">admin@dajarch.studio</code></p>
+              <p>Password: <code className="bg-cream px-1.5 py-0.5 rounded text-[11px]">dajarch-admin-2025</code></p>
+            </div>
+          )}
         </div>
       </motion.div>
     </div>
